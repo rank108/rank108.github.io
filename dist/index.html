@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Locked In Till June</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -11,14 +12,15 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             overflow-x: hidden;
             background: #0a0a0f;
             color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
             position: relative;
         }
 
@@ -118,16 +120,40 @@
             }
         }
 
-        .container {
+        .hero-section {
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex: 1;
+            min-height: 100vh;
             padding: 40px 20px;
             pointer-events: none;
+        }
+
+        .scroll-section {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .scroll-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         .card {
@@ -174,10 +200,60 @@
             line-height: 1.7;
             color: #94a3b8;
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+        }
+
+        .progress-section {
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(30, 40, 60, 0.4);
+            border-radius: 100px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 100px;
+            transition: width 1s ease-out;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .countdown {
@@ -219,6 +295,31 @@
             font-weight: 500;
         }
 
+        .daily-challenge {
+            background: rgba(40, 60, 80, 0.25);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .challenge-label {
+            font-size: 0.75rem;
+            color: #60a5fa;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .challenge-text {
+            font-size: 1rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
         .quote {
             text-align: center;
             font-size: 1rem;
@@ -226,8 +327,33 @@
             font-style: italic;
             line-height: 1.6;
             margin-top: 20px;
-            padding-top: 30px;
+            padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .quote:hover {
+            color: #94a3b8;
+            background: rgba(30, 40, 60, 0.2);
+        }
+
+        .quote::after {
+            content: '↻';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 1.2rem;
+            color: #60a5fa;
+        }
+
+        .quote:hover::after {
+            opacity: 0.5;
         }
 
         .cursor-glow {
@@ -244,140 +370,318 @@
             opacity: 0;
         }
 
-        .side-elements {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            max-width: 1400px;
-            height: 100%;
-            max-height: 600px;
-            z-index: 3;
-            pointer-events: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
         }
 
-        .easter-column {
-            display: flex;
-            flex-direction: column;
-            gap: 80px;
-            pointer-events: none;
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
         }
 
-        .easter-column.left {
-            margin-left: 40px;
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 50px;
+            line-height: 1.7;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .easter-column.right {
-            margin-right: 40px;
+        .mission-section {
+            text-align: center;
         }
 
-        .easter-egg {
-            cursor: pointer;
-            pointer-events: auto;
-            opacity: 0.3;
-            transition: all 0.3s ease;
-            font-size: 2.5rem;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            background: transparent;
-            border: none;
-            outline: none;
-        }
-
-        .easter-egg:hover {
-            opacity: 0.7;
-            transform: scale(1.15);
-        }
-
-        .easter-egg:active {
-            transform: scale(0.95);
-        }
-
-        .easter-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(20, 25, 35, 0.95);
+        .mission-content {
+            background: rgba(20, 25, 35, 0.5);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 12px 24px;
-            font-size: 0.95rem;
-            color: #ffffff;
-            white-space: nowrap;
-            z-index: 1000;
-            pointer-events: none;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            opacity: 0;
-            animation: fadeInOut 1.5s ease-in-out forwards;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 60px 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
-        @keyframes fadeInOut {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -60%);
-            }
-            10% {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
-            90% {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -40%);
-            }
+        .mission-text {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-weight: 400;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(-15deg) scale(1.1); }
-            50% { transform: rotate(15deg) scale(1.1); }
-            75% { transform: rotate(-10deg) scale(1.1); }
+        .mission-highlight {
+            color: #60a5fa;
+            font-weight: 600;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-25px) scale(1.1); }
+        .challenge-section-card {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 60px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        @keyframes glow {
-            0%, 100% { filter: drop-shadow(0 4px 12px rgba(255, 200, 100, 0.3)); }
-            50% { filter: drop-shadow(0 0 40px rgba(255, 200, 100, 1)); }
+        .challenge-section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
         }
 
-        @keyframes sway {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(-8deg) scale(1.05); }
-            75% { transform: rotate(8deg) scale(1.05); }
+        .challenge-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            50% { transform: scale(1.1); }
+        }
+
+        .challenge-main-text {
+            font-size: 2rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: rgba(30, 40, 60, 0.3);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.125rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .quote-generator-card {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 60px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .quote-display {
+            font-size: 1.75rem;
+            color: #cbd5e1;
+            font-style: italic;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quote-button {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .quote-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .squad-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .squad-card {
+            background: rgba(30, 40, 60, 0.3);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .squad-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(100, 150, 200, 0.4);
+        }
+
+        .squad-emoji {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .squad-title {
+            font-size: 1.5rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .squad-description {
+            font-size: 1rem;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .secret-section-card {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(100, 150, 200, 0.3);
+            border-radius: 32px;
+            padding: 60px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
+                        0 0 100px rgba(60, 130, 246, 0.1);
+        }
+
+        .secret-unlock-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .secret-icon {
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 20px;
+            background: rgba(40, 60, 80, 0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(100, 150, 200, 0.2);
+        }
+
+        .secret-icon:hover {
+            transform: scale(1.1);
+            background: rgba(60, 100, 140, 0.4);
+        }
+
+        .secret-icon.activated {
+            background: rgba(60, 130, 246, 0.3);
+            border-color: rgba(100, 150, 200, 0.5);
+            transform: scale(1.2);
+        }
+
+        .secret-revealed {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(60, 130, 246, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+        }
+
+        .secret-revealed.show {
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .secret-revealed-text {
+            font-size: 1.25rem;
+            color: #60a5fa;
+            font-weight: 600;
+            line-height: 1.7;
+        }
+
+        .final-section {
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .final-content {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 80px 60px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .final-title {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .final-subtitle {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        .final-date {
+            font-size: 2.5rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-top: 30px;
         }
 
         .footer {
             position: relative;
             z-index: 2;
             text-align: center;
-            padding: 30px 20px;
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #94a3b8;
+            padding: 40px 20px;
+            font-size: 1rem;
+            color: #64748b;
             letter-spacing: 0.02em;
-            pointer-events: auto;
         }
 
         .audio-control {
@@ -420,26 +724,735 @@
             color: #e2e8f0;
         }
 
+        .nav-pill {
+            position: fixed;
+            top: 30px;
+            background: rgba(30, 40, 60, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 50px;
+            padding: 12px 24px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-pill:hover {
+            background: rgba(40, 60, 90, 0.8);
+            border-color: rgba(100, 150, 200, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .squad-button {
+            left: 30px;
+        }
+
+        .excuse-button {
+            right: 30px;
+        }
+
+        .pill-icon {
+            font-size: 1.2rem;
+        }
+
+        .log-button {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(30, 40, 60, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 50px;
+            padding: 12px 24px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .log-button:hover {
+            background: rgba(40, 60, 90, 0.8);
+            border-color: rgba(100, 150, 200, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .log-icon {
+            font-size: 1.2rem;
+        }
+
+        .squad-dropdown {
+            position: fixed;
+            top: 80px;
+            left: 30px;
+            background: rgba(20, 25, 35, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 24px;
+            padding: 0;
+            width: 280px;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .squad-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid rgba(100, 150, 200, 0.2);
+        }
+
+        .dropdown-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 8px 0;
+        }
+
+        .dropdown-subtitle {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .squad-members {
+            padding: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .squad-member {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .squad-member:hover {
+            background: rgba(60, 80, 120, 0.3);
+        }
+
+        .member-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .member-role {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .excuse-modal,
+        .log-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .excuse-modal.show,
+        .log-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .excuse-content,
+        .log-modal-content {
+            position: relative;
+            background: rgba(20, 25, 35, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 32px;
+            padding: 50px 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .excuse-content {
+            text-align: center;
+        }
+
+        .log-modal-content {
+            width: 100%;
+            margin: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(100, 150, 200, 0.2);
+            color: #ffffff;
+        }
+
+        .excuse-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 30px;
+            letter-spacing: 0.05em;
+        }
+
+        .excuse-text {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .excuse-generate-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .excuse-generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .log-modal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .log-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        .form-group select {
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(30, 40, 60, 0.7);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .radio-label {
+            flex: 1;
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .radio-label:hover {
+            background: rgba(40, 60, 90, 0.6);
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .radio-label input[type="radio"] {
+            display: none;
+        }
+
+        .radio-label input[type="radio"]:checked + span {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .radio-label:has(input[type="radio"]:checked) {
+            background: rgba(60, 130, 246, 0.2);
+            border-color: #60a5fa;
+        }
+
+        .radio-label span {
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .checkbox-label {
+            flex: 1;
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(40, 60, 90, 0.6);
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + span {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .checkbox-label:has(input[type="checkbox"]:checked) {
+            background: rgba(60, 130, 246, 0.2);
+            border-color: #60a5fa;
+        }
+
+        .checkbox-label span {
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+
+        .form-group input[type="number"] {
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(30, 40, 60, 0.7);
+        }
+
+        .form-group input[type="number"]::placeholder {
+            color: #64748b;
+        }
+
+        .log-submit-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            margin-top: 10px;
+        }
+
+        .log-submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .reset-container {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(100, 150, 200, 0.15);
+            text-align: center;
+        }
+
+        .reset-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.02em;
+        }
+
+        .reset-btn:hover {
+            color: #94a3b8;
+            background: rgba(100, 150, 200, 0.1);
+        }
+
+        .password-prompt-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            padding: 20px;
+        }
+
+        .password-prompt-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-prompt-content {
+            background: rgba(20, 25, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 35px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .password-prompt-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .password-prompt-description {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .password-input-group {
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            width: 100%;
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(30, 40, 60, 0.7);
+        }
+
+        .password-input::placeholder {
+            color: #64748b;
+        }
+
+        .password-error {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .password-error.show {
+            opacity: 1;
+        }
+
+        .password-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .password-cancel-btn,
+        .password-confirm-btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .password-cancel-btn {
+            background: rgba(30, 40, 60, 0.5);
+            color: #94a3b8;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+        }
+
+        .password-cancel-btn:hover {
+            background: rgba(40, 60, 90, 0.6);
+            color: #cbd5e1;
+        }
+
+        .password-confirm-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .password-confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .leaderboard-section {
+            background: rgba(10, 15, 25, 0.3);
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin: 40px 0 30px;
+        }
+
+        .tab-button {
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 50px;
+            padding: 14px 40px;
+            color: #cbd5e1;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background: rgba(40, 60, 90, 0.6);
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-color: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .leaderboard-content {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .tab-content {
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .tab-content.active {
+            opacity: 1;
+            visibility: visible;
+            position: relative;
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .leaderboard-card {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 24px;
+            padding: 30px;
+        }
+
+        .leaderboard-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: rgba(30, 40, 60, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(40, 60, 90, 0.4);
+            transform: translateX(5px);
+        }
+
+        .leaderboard-item.rank-1 {
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.2);
+        }
+
+        .leaderboard-item.rank-1:hover {
+            background: rgba(220, 38, 38, 0.2);
+            box-shadow: 0 6px 30px rgba(220, 38, 38, 0.3);
+        }
+
+        .leaderboard-rank {
+            font-size: 1.25rem;
+            font-weight: 700;
+            min-width: 35px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .leaderboard-score {
+            font-size: 1.125rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-score {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .leaderboard-empty {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.95rem;
+            padding: 30px;
+        }
+
         @media (max-width: 1200px) {
-            .side-elements {
-                max-width: 1100px;
-            }
-
-            .easter-column.left {
-                margin-left: 20px;
-            }
-
-            .easter-column.right {
-                margin-right: 20px;
-            }
-
-            .easter-column {
-                gap: 60px;
-            }
-
-            .easter-egg {
-                font-size: 2.2rem;
-            }
         }
 
         @media (max-width: 768px) {
@@ -476,6 +1489,21 @@
 
             .quote {
                 font-size: 0.9rem;
+                padding: 16px;
+            }
+
+            .quote::after {
+                right: 12px;
+                font-size: 1rem;
+            }
+
+            .daily-challenge {
+                padding: 16px 20px;
+                margin-bottom: 24px;
+            }
+
+            .challenge-text {
+                font-size: 0.95rem;
             }
 
             .shape:nth-child(1),
@@ -487,43 +1515,164 @@
                 opacity: 0.1;
             }
 
-            .side-elements {
-                top: auto;
-                bottom: 20px;
-                transform: translate(-50%, 0);
-                max-height: none;
-                height: auto;
-                flex-direction: row;
-                justify-content: center;
-                gap: 20px;
-                max-width: 100%;
-            }
-
-            .easter-column {
-                flex-direction: row;
-                gap: 20px;
-                margin: 0 !important;
-            }
-
-            .easter-column.left .easter-egg:nth-child(3),
-            .easter-column.right .easter-egg:nth-child(3) {
-                display: none;
-            }
-
-            .easter-egg {
-                font-size: 1.8rem;
-                padding: 10px;
-            }
-
             .cursor-glow {
                 display: none;
+            }
+
+            .scroll-section {
+                padding: 60px 20px;
+                min-height: auto;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .section-subtitle {
+                font-size: 1rem;
+                margin-bottom: 30px;
+            }
+
+            .mission-content,
+            .challenge-section-card,
+            .quote-generator-card,
+            .secret-section-card,
+            .final-content {
+                padding: 40px 30px;
+                border-radius: 24px;
+            }
+
+            .mission-text {
+                font-size: 1.125rem;
+            }
+
+            .challenge-icon {
+                font-size: 3rem;
+            }
+
+            .challenge-main-text {
+                font-size: 1.5rem;
+            }
+
+            .progress-stats {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .stat-label {
+                font-size: 1rem;
+            }
+
+            .quote-display {
+                font-size: 1.25rem;
+                min-height: 80px;
+            }
+
+            .quote-button {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+
+            .squad-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .squad-emoji {
+                font-size: 2.5rem;
+            }
+
+            .squad-title {
+                font-size: 1.25rem;
+            }
+
+            .secret-unlock-icons {
+                gap: 15px;
+            }
+
+            .secret-icon {
+                font-size: 2.5rem;
+                padding: 15px;
+            }
+
+            .secret-revealed-text {
+                font-size: 1rem;
+            }
+
+            .final-title {
+                font-size: 2.5rem;
+            }
+
+            .final-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .final-date {
+                font-size: 1.75rem;
+            }
+
+            .nav-pill {
+                top: 20px;
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
+
+            .squad-button {
+                left: 20px;
+            }
+
+            .excuse-button {
+                right: 20px;
+            }
+
+            .log-button {
+                bottom: 20px;
+                left: 20px;
+                padding: 10px 18px;
+                font-size: 0.85rem;
             }
 
             .audio-control {
                 bottom: 20px;
                 right: 20px;
-                padding: 10px 20px;
-                font-size: 0.85rem;
+            }
+
+            .tab-button {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+
+            .leaderboard-content {
+                min-height: 350px;
+            }
+
+            .squad-dropdown {
+                top: 70px;
+                left: 20px;
+                width: calc(100% - 40px);
+                max-width: 320px;
+            }
+
+            .excuse-text {
+                font-size: 1.5rem;
+                min-height: 60px;
+            }
+
+            .log-modal-content {
+                padding: 40px 30px;
+            }
+
+            .log-modal-title {
+                font-size: 1.5rem;
+            }
+
+            .leaderboard-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
 
             .footer {
@@ -554,15 +1703,6 @@
                 font-size: 2rem;
             }
 
-            .easter-column {
-                gap: 15px;
-            }
-
-            .easter-egg {
-                font-size: 1.5rem;
-                padding: 8px;
-            }
-
             .footer {
                 font-size: 0.9rem;
             }
@@ -572,7 +1712,7 @@
 <body>
     <div class="video-background">
         <video id="bgVideo" autoplay muted loop playsinline>
-            <source src="/assets/gym-background-BDgAW5GE.mp4" type="video/mp4">
+            <source src="/assets/gym-background-BRlfp8Vq.mp4" type="video/mp4">
         </video>
     </div>
 
@@ -584,26 +1724,154 @@
         <span id="audioText">Enable Sound</span>
     </button>
 
+    <button class="nav-pill squad-button" id="squadButton">
+        <span class="pill-icon">👥</span>
+        <span>Squad</span>
+    </button>
+
+    <button class="nav-pill excuse-button" id="excuseButton">
+        <span class="pill-icon">⚡</span>
+        <span>Excuse Destroyer</span>
+    </button>
+
+    <button class="log-button" id="logButton">
+        <span class="log-icon">📝</span>
+        <span>Log Today</span>
+    </button>
+
+    <div class="squad-dropdown" id="squadDropdown">
+        <div class="dropdown-header">
+            <h3>The Squad</h3>
+            <p class="dropdown-subtitle">Locked in till June</p>
+        </div>
+        <div class="squad-members">
+            <div class="squad-member">
+                <span class="member-name">Peter</span>
+                <span class="member-role">Initiator</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Amjad</span>
+                <span class="member-role">Big Guy</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Ali</span>
+                <span class="member-role">Athlete</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Osman</span>
+                <span class="member-role">Dirty Diet</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Abod</span>
+                <span class="member-role">Dirty Diet</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Yazan</span>
+                <span class="member-role">Entrepreneur</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Rashed</span>
+                <span class="member-role">OG</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Jonny</span>
+                <span class="member-role">Maynoon</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="excuse-modal" id="excuseModal">
+        <div class="excuse-content">
+            <button class="modal-close" id="excuseClose">&times;</button>
+            <h2 class="excuse-title">EXCUSE DESTROYER</h2>
+            <div class="excuse-text" id="excuseText">No excuses today.</div>
+            <button class="excuse-generate-btn" id="excuseGenerate">Destroy Another</button>
+        </div>
+    </div>
+
+    <div class="log-modal" id="logModal">
+        <div class="log-modal-content">
+            <button class="modal-close" id="logClose">&times;</button>
+            <h2 class="log-modal-title">Log Today</h2>
+            <form class="log-form" id="logForm">
+                <div class="form-group">
+                    <label for="logName">Who are you?</label>
+                    <select id="logName" required>
+                        <option value="">Select your name</option>
+                        <option value="Peter">Peter</option>
+                        <option value="Amjad">Amjad</option>
+                        <option value="Ali">Ali</option>
+                        <option value="Osman">Osman</option>
+                        <option value="Abod">Abod</option>
+                        <option value="Yazan">Yazan</option>
+                        <option value="Rashed">Rashed</option>
+                        <option value="Jonny">Jonny</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Did you workout today?</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="workout" value="yes" required>
+                            <span>Yes</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="workout" value="no" required>
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="workoutTypeGroup" style="display: none;">
+                    <label>Which workout? (select all that apply)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="workoutType" value="gym">
+                            <span>Gym</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="workoutType" value="padel">
+                            <span>Padel</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="stepsInput">How many steps today?</label>
+                    <input type="number" id="stepsInput" name="steps" min="0" placeholder="e.g., 8500" required>
+                </div>
+
+                <button type="submit" class="log-submit-btn">Submit</button>
+            </form>
+            <div class="reset-container">
+                <button class="reset-btn" id="resetBtn">Reset leaderboard data</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="password-prompt-modal" id="passwordPromptModal">
+        <div class="password-prompt-content">
+            <h2 class="password-prompt-title">Admin Access Required</h2>
+            <p class="password-prompt-description">Enter the admin password to reset all leaderboard data. This action cannot be undone.</p>
+            <div class="password-input-group">
+                <input type="password" class="password-input" id="passwordInput" placeholder="Enter password">
+                <div class="password-error" id="passwordError">Incorrect password</div>
+            </div>
+            <div class="password-actions">
+                <button class="password-cancel-btn" id="passwordCancel">Cancel</button>
+                <button class="password-confirm-btn" id="passwordConfirm">Reset Data</button>
+            </div>
+        </div>
+    </div>
+
     <div class="shapes">
         <div class="shape"></div>
         <div class="shape"></div>
         <div class="shape"></div>
     </div>
 
-    <div class="side-elements">
-        <div class="easter-column left">
-            <button class="easter-egg" data-message="One more rep 💪" data-animation="shake" type="button" aria-label="One more rep">🏋️</button>
-            <button class="easter-egg" data-message="Protein time 🔒" data-animation="shake" type="button" aria-label="Protein time">🥤</button>
-            <button class="easter-egg" data-message="Summer loading ☀️" data-animation="glow" type="button" aria-label="Summer loading">☀️</button>
-        </div>
-        <div class="easter-column right">
-            <button class="easter-egg" data-message="Catch the wave 🌊" data-animation="sway" type="button" aria-label="Catch the wave">🏄</button>
-            <button class="easter-egg" data-message="Beach mode 🏖️" data-animation="sway" type="button" aria-label="Beach mode">🌴</button>
-            <button class="easter-egg" data-message="Stay playful ⚡" data-animation="bounce" type="button" aria-label="Stay playful">🏐</button>
-        </div>
-    </div>
-
-    <div class="container">
+    <section class="hero-section">
         <div class="card">
             <h1 class="title">LOCKED IN TILL JUNE</h1>
             <p class="subtitle">Our shared countdown to better habits, harder training, smarter eating, and feeling stronger and more confident by summer 2026.</p>
@@ -627,11 +1895,166 @@
                 </div>
             </div>
 
-            <div class="quote">
+            <div class="quote" id="quote">
                 "Discipline is choosing between what you want now and what you want most."
             </div>
         </div>
-    </div>
+    </section>
+
+    <section class="scroll-section leaderboard-section">
+        <div class="section-container">
+            <h2 class="section-title">Squad Leaderboard</h2>
+            <p class="section-subtitle">Track your progress and compete with the squad</p>
+
+            <div class="leaderboard-tabs">
+                <button class="tab-button active" data-tab="workouts">Workouts</button>
+                <button class="tab-button" data-tab="steps">Steps</button>
+            </div>
+
+            <div class="leaderboard-content">
+                <div class="tab-content active" id="workoutsTab">
+                    <div class="leaderboard-list" id="workoutsLeaderboard">
+                        <div class="leaderboard-empty">Loading...</div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="stepsTab">
+                    <div class="leaderboard-list" id="stepsLeaderboard">
+                        <div class="leaderboard-empty">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section mission-section">
+        <div class="section-container">
+            <div class="mission-content">
+                <h2 class="section-title">The Mission</h2>
+                <p class="mission-text">
+                    No excuses. No half-efforts. Just <span class="mission-highlight">pure commitment</span> to becoming the strongest version of yourself.
+                </p>
+                <p class="mission-text">
+                    This is about more than the gym. It's about discipline, consistency, and showing up every single day until <span class="mission-highlight">June 1st, 2026</span>.
+                </p>
+                <p class="mission-text">
+                    Summer bodies are built in winter. Let's make it count.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Today's Challenge</h2>
+            <div class="challenge-section-card">
+                <div class="challenge-icon">💪</div>
+                <div class="challenge-main-text" id="challengeText">Loading...</div>
+                <p class="section-subtitle" style="margin-bottom: 0; margin-top: 20px;">New challenge drops every day</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Journey Progress</h2>
+            <p class="section-subtitle">Track every step towards June 1st</p>
+
+            <div class="progress-section" style="margin-bottom: 40px;">
+                <div class="progress-label">
+                    <span>Journey Progress</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="daysRemaining">0</span>
+                    <span class="stat-label">Days Remaining</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="daysElapsed">0</span>
+                    <span class="stat-label">Days Locked In</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="weeksRemaining">0</span>
+                    <span class="stat-label">Weeks to Go</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Daily Motivation</h2>
+            <div class="quote-generator-card">
+                <div class="quote-display" id="quoteDisplay">"Discipline is choosing between what you want now and what you want most."</div>
+                <button class="quote-button" id="quoteButton">New Quote</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Squad Energy</h2>
+            <p class="section-subtitle">We're all in this together</p>
+
+            <div class="squad-grid">
+                <div class="squad-card">
+                    <span class="squad-emoji">🔥</span>
+                    <div class="squad-title">No Days Off</div>
+                    <p class="squad-description">The grind doesn't stop. Every rep counts, every meal matters.</p>
+                </div>
+                <div class="squad-card">
+                    <span class="squad-emoji">💯</span>
+                    <div class="squad-title">All or Nothing</div>
+                    <p class="squad-description">Half-reps don't count. We're here for maximum results.</p>
+                </div>
+                <div class="squad-card">
+                    <span class="squad-emoji">⚡</span>
+                    <div class="squad-title">Built Different</div>
+                    <p class="squad-description">While they sleep, we train. That's the difference.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Secret Zone</h2>
+            <div class="secret-section-card">
+                <p class="section-subtitle">Click the icons in the right order to unlock something special</p>
+
+                <div class="secret-unlock-icons">
+                    <div class="secret-icon" data-order="1">🏋️</div>
+                    <div class="secret-icon" data-order="2">🥤</div>
+                    <div class="secret-icon" data-order="3">☀️</div>
+                </div>
+
+                <div class="secret-revealed" id="secretRevealed">
+                    <p class="secret-revealed-text">
+                        You found it. The real secret? There are no shortcuts.
+                        Just consistency, discipline, and showing up when you don't feel like it.
+                        That's what builds champions. Keep going.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="final-section">
+        <div class="section-container">
+            <div class="final-content">
+                <div class="final-title">SUMMER LOADING</div>
+                <p class="final-subtitle">The best version of you is coming</p>
+                <div class="final-date">June 1, 2026</div>
+            </div>
+        </div>
+    </section>
 
     <footer class="footer">
         Final day: June 1, 2026
@@ -665,6 +2088,179 @@
 
         updateCountdown();
         setInterval(updateCountdown, 1000);
+
+        const startDate = new Date('March 24, 2026 00:00:00').getTime();
+        function updateProgress() {
+            const now = new Date().getTime();
+            const totalDuration = targetDate - startDate;
+            const elapsed = now - startDate;
+            const progressPercent = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
+
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('progressPercent').textContent = progressPercent.toFixed(1) + '%';
+        }
+
+        updateProgress();
+        setInterval(updateProgress, 60000);
+
+        const dailyChallenges = [
+            "Complete 10 extra push-ups today",
+            "Drink 8 glasses of water",
+            "Try a new healthy recipe",
+            "30-minute workout session",
+            "Meditate for 10 minutes",
+            "No junk food today",
+            "Run or walk 2 miles",
+            "Do 5 minutes of stretching",
+            "Meal prep for tomorrow",
+            "Get 8 hours of sleep tonight",
+            "Try a new exercise",
+            "Hit your protein goal",
+            "Take the stairs all day",
+            "No screens 1 hour before bed",
+            "Learn a new fitness tip"
+        ];
+
+        function getDailyChallenge() {
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+            const challengeIndex = dayOfYear % dailyChallenges.length;
+            document.getElementById('challengeText').textContent = dailyChallenges[challengeIndex];
+        }
+
+        getDailyChallenge();
+
+        function updateStats() {
+            const now = new Date().getTime();
+            const totalDuration = targetDate - startDate;
+            const elapsed = now - startDate;
+
+            const daysRemaining = Math.floor((targetDate - now) / (1000 * 60 * 60 * 24));
+            const daysElapsed = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+            const weeksRemaining = Math.floor(daysRemaining / 7);
+
+            const daysRemainingEl = document.getElementById('daysRemaining');
+            const daysElapsedEl = document.getElementById('daysElapsed');
+            const weeksRemainingEl = document.getElementById('weeksRemaining');
+
+            if (daysRemainingEl) daysRemainingEl.textContent = daysRemaining;
+            if (daysElapsedEl) daysElapsedEl.textContent = daysElapsed;
+            if (weeksRemainingEl) weeksRemainingEl.textContent = weeksRemaining;
+        }
+
+        updateStats();
+        setInterval(updateStats, 60000);
+
+        const scrollSections = document.querySelectorAll('.scroll-section');
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        if (!stat.dataset.animated) {
+                            const target = parseInt(stat.textContent);
+                            animateNumber(stat, 0, target, 1500);
+                            stat.dataset.animated = 'true';
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        scrollSections.forEach(section => {
+            scrollObserver.observe(section);
+        });
+
+        function animateNumber(element, start, end, duration) {
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    element.textContent = end;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        const quotes = [
+            "Discipline is choosing between what you want now and what you want most.",
+            "Your only limit is you. Break through it.",
+            "The pain you feel today will be the strength you feel tomorrow.",
+            "Success isn't always about greatness. It's about consistency.",
+            "Don't stop when you're tired. Stop when you're done.",
+            "The body achieves what the mind believes.",
+            "Excuses don't burn calories.",
+            "You don't have to be great to start, but you have to start to be great.",
+            "Make yourself proud.",
+            "Sweat is fat crying.",
+            "The only bad workout is the one that didn't happen.",
+            "Stronger than yesterday, weaker than tomorrow."
+        ];
+
+        let currentQuoteIndex = 0;
+        const quoteElement = document.getElementById('quote');
+        const quoteDisplay = document.getElementById('quoteDisplay');
+        const quoteButton = document.getElementById('quoteButton');
+
+        quoteElement.addEventListener('click', () => {
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+            quoteElement.style.opacity = '0.5';
+            setTimeout(() => {
+                quoteElement.textContent = '"' + quotes[currentQuoteIndex] + '"';
+                quoteElement.style.opacity = '1';
+            }, 200);
+        });
+
+        if (quoteButton) {
+            quoteButton.addEventListener('click', () => {
+                currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+                quoteDisplay.style.opacity = '0.5';
+                setTimeout(() => {
+                    quoteDisplay.textContent = '"' + quotes[currentQuoteIndex] + '"';
+                    quoteDisplay.style.opacity = '1';
+                }, 200);
+            });
+        }
+
+        const secretSequence2 = [1, 2, 3];
+        let userSequence2 = [];
+        const secretRevealed = document.getElementById('secretRevealed');
+        const secretIcons = document.querySelectorAll('.secret-icon');
+
+        secretIcons.forEach(icon => {
+            icon.addEventListener('click', () => {
+                const order = parseInt(icon.dataset.order);
+                userSequence2.push(order);
+
+                icon.classList.add('activated');
+                setTimeout(() => {
+                    icon.classList.remove('activated');
+                }, 300);
+
+                if (userSequence2.length > secretSequence2.length) {
+                    userSequence2.shift();
+                }
+
+                if (userSequence2.length === secretSequence2.length &&
+                    userSequence2.every((val, i) => val === secretSequence2[i])) {
+                    secretRevealed.classList.add('show');
+                    userSequence2 = [];
+                }
+            });
+        });
+
 
         const bgVideo = document.getElementById('bgVideo');
         const audioControl = document.getElementById('audioControl');
@@ -721,43 +2317,539 @@
 
         animateCursor();
 
-        const easterEggs = document.querySelectorAll('.easter-egg');
-        easterEggs.forEach(egg => {
-            egg.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+        const squadButton = document.getElementById('squadButton');
+        const squadDropdown = document.getElementById('squadDropdown');
+        const excuseButton = document.getElementById('excuseButton');
+        const excuseModal = document.getElementById('excuseModal');
+        const excuseClose = document.getElementById('excuseClose');
+        const excuseText = document.getElementById('excuseText');
+        const excuseGenerate = document.getElementById('excuseGenerate');
+        const logButton = document.getElementById('logButton');
+        const logModal = document.getElementById('logModal');
+        const logClose = document.getElementById('logClose');
+        const logForm = document.getElementById('logForm');
+        const workoutTypeGroup = document.getElementById('workoutTypeGroup');
 
-                const message = this.getAttribute('data-message');
-                const animation = this.getAttribute('data-animation');
+        squadButton.addEventListener('click', () => {
+            squadDropdown.classList.toggle('show');
+        });
 
-                this.style.animation = `${animation} 0.5s ease`;
+        document.addEventListener('click', (e) => {
+            if (!squadButton.contains(e.target) && !squadDropdown.contains(e.target)) {
+                squadDropdown.classList.remove('show');
+            }
+        });
 
-                setTimeout(() => {
-                    this.style.animation = '';
-                }, 500);
+        const excuseLines = [
+            "No excuses today.",
+            "Start ugly.",
+            "Ten minutes is better than zero.",
+            "Beach is coming.",
+            "Do the workout and complain later.",
+            "Tired is not a schedule.",
+            "The mood will come after you start.",
+            "You're not tired. You're unmotivated.",
+            "Sweat now. Shine later.",
+            "The only bad workout is the one you didn't do.",
+            "Stop waiting. Start moving.",
+            "You don't need motivation. You need discipline."
+        ];
 
-                const existingMessage = this.querySelector('.easter-message');
-                if (existingMessage) {
-                    existingMessage.remove();
+        let currentExcuseIndex = 0;
+
+        function showRandomExcuse() {
+            currentExcuseIndex = (currentExcuseIndex + 1) % excuseLines.length;
+            excuseText.style.opacity = '0.5';
+            setTimeout(() => {
+                excuseText.textContent = excuseLines[currentExcuseIndex];
+                excuseText.style.opacity = '1';
+            }, 200);
+        }
+
+        excuseButton.addEventListener('click', () => {
+            excuseModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        });
+
+        excuseClose.addEventListener('click', () => {
+            excuseModal.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+
+        excuseGenerate.addEventListener('click', showRandomExcuse);
+
+        excuseModal.addEventListener('click', (e) => {
+            if (e.target === excuseModal) {
+                excuseModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+
+        logButton.addEventListener('click', () => {
+            logModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        });
+
+        logClose.addEventListener('click', () => {
+            logModal.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+
+        logModal.addEventListener('click', (e) => {
+            if (e.target === logModal) {
+                logModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                if (targetTab === 'workouts') {
+                    document.getElementById('workoutsTab').classList.add('active');
+                } else if (targetTab === 'steps') {
+                    document.getElementById('stepsTab').classList.add('active');
+                }
+            });
+        });
+
+        const workoutRadios = document.querySelectorAll('input[name="workout"]');
+        workoutRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'yes') {
+                    workoutTypeGroup.style.display = 'block';
+                } else {
+                    workoutTypeGroup.style.display = 'none';
+                    document.querySelectorAll('input[name="workoutType"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
+            });
+        });
+
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://tzmikccgomfttvtjetxp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6bWlrY2Nnb21mdHR2dGpldHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTM1NTgsImV4cCI6MjA4OTkyOTU1OH0.599femhAv3PuSZQUbtDTK9dNyBVas4vQD_FjHTE6G0Y';
+
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const STORAGE_KEY = 'lockedInTillJune_logs';
+        const MIGRATION_VERSION_KEY = 'lockedInTillJune_version';
+        const CURRENT_VERSION = 2;
+
+        function migrateData() {
+            const currentVersion = parseInt(localStorage.getItem(MIGRATION_VERSION_KEY) || '0');
+
+            if (currentVersion >= CURRENT_VERSION) {
+                return;
+            }
+
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (!data) {
+                localStorage.setItem(MIGRATION_VERSION_KEY, CURRENT_VERSION.toString());
+                return;
+            }
+
+            let logs = JSON.parse(data);
+
+            logs = logs.map(log => {
+                const migratedLog = { ...log };
+
+                if (typeof log.steps === 'string') {
+                    migratedLog.steps = 0;
+                } else if (typeof log.steps === 'number' && !isNaN(log.steps)) {
+                    migratedLog.steps = Math.max(0, Math.floor(log.steps));
+                } else {
+                    migratedLog.steps = 0;
                 }
 
-                const messageEl = document.createElement('div');
-                messageEl.className = 'easter-message';
-                messageEl.textContent = message;
-                this.appendChild(messageEl);
-
-                setTimeout(() => {
-                    if (messageEl.parentNode) {
-                        messageEl.remove();
+                if (log.workout && !log.workoutTypes) {
+                    if (log.workoutType) {
+                        migratedLog.workoutTypes = [log.workoutType];
+                    } else {
+                        migratedLog.workoutTypes = [];
                     }
-                }, 1500);
+                }
+
+                return migratedLog;
             });
 
-            egg.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                this.click();
-            }, { passive: false });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+            localStorage.setItem(MIGRATION_VERSION_KEY, CURRENT_VERSION.toString());
+        }
+
+        // Supabase Data Functions
+        async function loadLogs() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('activity_logs')
+                    .select('*')
+                    .order('log_date', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading logs:', error);
+                    return [];
+                }
+
+                return data || [];
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                return [];
+            }
+        }
+
+        async function saveLog(logData) {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+
+                const { data: existingLog, error: selectError } = await supabaseClient
+                    .from('activity_logs')
+                    .select('id, gym_count, padel_count, steps')
+                    .eq('name', logData.name)
+                    .eq('log_date', today)
+                    .maybeSingle();
+
+                if (selectError) {
+                    console.error('Error checking existing log:', selectError);
+                    console.error('Full error details:', JSON.stringify(selectError, null, 2));
+                    throw selectError;
+                }
+
+                const newGymCount = logData.workoutTypes.includes('gym') ? 1 : 0;
+                const newPadelCount = logData.workoutTypes.includes('padel') ? 1 : 0;
+
+                let result;
+
+                if (existingLog) {
+                    const mergedData = {
+                        gym_count: (existingLog.gym_count || 0) + newGymCount,
+                        padel_count: (existingLog.padel_count || 0) + newPadelCount,
+                        steps: (existingLog.steps || 0) + logData.steps
+                    };
+
+                    console.log('Merging with existing log:', {
+                        existing: existingLog,
+                        newSubmission: { gym: newGymCount, padel: newPadelCount, steps: logData.steps },
+                        merged: mergedData
+                    });
+
+                    const { data, error } = await supabaseClient
+                        .from('activity_logs')
+                        .update(mergedData)
+                        .eq('id', existingLog.id)
+                        .select();
+
+                    if (error) {
+                        console.error('Error updating log:', error);
+                        console.error('Full error details:', JSON.stringify(error, null, 2));
+                        throw error;
+                    }
+
+                    result = data;
+                } else {
+                    const newLog = {
+                        name: logData.name,
+                        log_date: today,
+                        gym_count: newGymCount,
+                        padel_count: newPadelCount,
+                        steps: logData.steps
+                    };
+
+                    console.log('Inserting new log:', newLog);
+
+                    const { data, error } = await supabaseClient
+                        .from('activity_logs')
+                        .insert(newLog)
+                        .select();
+
+                    if (error) {
+                        console.error('Error inserting log:', error);
+                        console.error('Full error details:', JSON.stringify(error, null, 2));
+                        throw error;
+                    }
+
+                    result = data;
+                }
+
+                console.log('Log saved successfully:', result);
+                return result;
+            } catch (error) {
+                console.error('Error in saveLog function:', error);
+                console.error('Full error details:', JSON.stringify(error, null, 2));
+                throw error;
+            }
+        }
+
+        // Legacy localStorage functions (keeping for migration purposes)
+        function saveLogs(logs) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        }
+
+        function getRankingColor(rank) {
+            const colors = [
+                { rank: 1, color: '#ef4444', opacity: 1.0 },
+                { rank: 2, color: '#f97316', opacity: 0.95 },
+                { rank: 3, color: '#fbbf24', opacity: 0.9 },
+                { rank: 4, color: '#a3e635', opacity: 0.85 },
+                { rank: 5, color: '#22c55e', opacity: 0.8 },
+                { rank: 6, color: '#14b8a6', opacity: 0.75 },
+                { rank: 7, color: '#06b6d4', opacity: 0.7 },
+                { rank: 8, color: '#3b82f6', opacity: 0.65 },
+                { rank: 9, color: '#6366f1', opacity: 0.6 },
+                { rank: 10, color: '#8b5cf6', opacity: 0.55 }
+            ];
+
+            if (rank <= colors.length) {
+                const colorData = colors[rank - 1];
+                return {
+                    color: colorData.color,
+                    opacity: colorData.opacity
+                };
+            }
+
+            const baseOpacity = 0.5;
+            const fadeRate = 0.03;
+            const calculatedOpacity = Math.max(0.2, baseOpacity - ((rank - colors.length) * fadeRate));
+
+            return {
+                color: '#64748b',
+                opacity: calculatedOpacity
+            };
+        }
+
+        function getRankingNameColor(rank) {
+            const colors = [
+                { rank: 1, color: '#fecaca' },
+                { rank: 2, color: '#fed7aa' },
+                { rank: 3, color: '#fde68a' },
+                { rank: 4, color: '#d9f99d' },
+                { rank: 5, color: '#bbf7d0' }
+            ];
+
+            if (rank <= colors.length) {
+                return colors[rank - 1].color;
+            }
+
+            return '#e2e8f0';
+        }
+
+        logForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('logName').value;
+            const workout = document.querySelector('input[name="workout"]:checked').value;
+
+            let workoutTypes = [];
+            if (workout === 'yes') {
+                const checkedBoxes = document.querySelectorAll('input[name="workoutType"]:checked');
+                if (checkedBoxes.length === 0) {
+                    alert('Please select at least one workout type');
+                    return;
+                }
+                workoutTypes = Array.from(checkedBoxes).map(cb => cb.value);
+            }
+
+            const stepsValue = parseInt(document.getElementById('stepsInput').value, 10);
+            const steps = isNaN(stepsValue) ? 0 : Math.max(0, stepsValue);
+
+            try {
+                await saveLog({
+                    name,
+                    workout: workout === 'yes',
+                    workoutTypes,
+                    steps
+                });
+
+                logForm.reset();
+                workoutTypeGroup.style.display = 'none';
+                logModal.classList.remove('show');
+                document.body.style.overflow = '';
+
+                await updateLeaderboards();
+
+                alert('Logged successfully!');
+            } catch (error) {
+                alert('Error saving log. Please try again.');
+                console.error('Error:', error);
+            }
         });
+
+        async function updateLeaderboards() {
+            const logs = await loadLogs();
+
+            const squadMembers = [
+                'Peter',
+                'Amjad',
+                'Ali',
+                'Osman',
+                'Abod',
+                'Yazan',
+                'Rashed',
+                'Jonny'
+            ];
+
+            const workoutsCount = {};
+            const stepsTotal = {};
+
+            squadMembers.forEach(member => {
+                workoutsCount[member] = 0;
+                stepsTotal[member] = 0;
+            });
+
+            logs.forEach(log => {
+                if (!squadMembers.includes(log.name)) return;
+
+                const gymCount = log.gym_count || (log.gym ? 1 : 0);
+                const padelCount = log.padel_count || (log.padel ? 1 : 0);
+                const totalWorkouts = gymCount + padelCount;
+
+                workoutsCount[log.name] = (workoutsCount[log.name] || 0) + totalWorkouts;
+
+                if (log.steps !== undefined && log.steps !== null) {
+                    const stepValue = typeof log.steps === 'number' ? log.steps : parseInt(log.steps, 10);
+                    if (!isNaN(stepValue) && stepValue >= 0) {
+                        stepsTotal[log.name] = (stepsTotal[log.name] || 0) + stepValue;
+                    }
+                }
+            });
+
+            const workoutsLeaderboard = Object.entries(workoutsCount)
+                .sort((a, b) => b[1] - a[1]);
+
+            const stepsLeaderboard = Object.entries(stepsTotal)
+                .sort((a, b) => b[1] - a[1]);
+
+            const workoutsContainer = document.getElementById('workoutsLeaderboard');
+            const stepsContainer = document.getElementById('stepsLeaderboard');
+
+            workoutsContainer.innerHTML = workoutsLeaderboard
+                .map((entry, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'rank-1' : '';
+                    const rankColor = getRankingColor(rank);
+                    const nameColor = getRankingNameColor(rank);
+
+                    return `
+                        <div class="leaderboard-item ${rankClass}">
+                            <span class="leaderboard-rank" style="color: ${rankColor.color}; opacity: ${rankColor.opacity};">#${rank}</span>
+                            <span class="leaderboard-name" style="color: ${nameColor};">${entry[0]}</span>
+                            <span class="leaderboard-score" style="color: ${rankColor.color}; opacity: ${rankColor.opacity};">${entry[1]}</span>
+                        </div>
+                    `;
+                }).join('');
+
+            stepsContainer.innerHTML = stepsLeaderboard
+                .map((entry, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'rank-1' : '';
+                    const rankColor = getRankingColor(rank);
+                    const nameColor = getRankingNameColor(rank);
+
+                    return `
+                        <div class="leaderboard-item ${rankClass}">
+                            <span class="leaderboard-rank" style="color: ${rankColor.color}; opacity: ${rankColor.opacity};">#${rank}</span>
+                            <span class="leaderboard-name" style="color: ${nameColor};">${entry[0]}</span>
+                            <span class="leaderboard-score" style="color: ${rankColor.color}; opacity: ${rankColor.opacity};">${entry[1].toLocaleString()}</span>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        migrateData();
+        updateLeaderboards();
+
+        const ADMIN_PASSWORD = 'krewella';
+        const resetBtn = document.getElementById('resetBtn');
+        const passwordPromptModal = document.getElementById('passwordPromptModal');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordError = document.getElementById('passwordError');
+        const passwordCancel = document.getElementById('passwordCancel');
+        const passwordConfirm = document.getElementById('passwordConfirm');
+
+        resetBtn.addEventListener('click', () => {
+            passwordPromptModal.classList.add('show');
+            passwordInput.value = '';
+            passwordError.classList.remove('show');
+            passwordInput.focus();
+        });
+
+        passwordCancel.addEventListener('click', () => {
+            passwordPromptModal.classList.remove('show');
+            passwordInput.value = '';
+            passwordError.classList.remove('show');
+        });
+
+        passwordPromptModal.addEventListener('click', (e) => {
+            if (e.target === passwordPromptModal) {
+                passwordPromptModal.classList.remove('show');
+                passwordInput.value = '';
+                passwordError.classList.remove('show');
+            }
+        });
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                passwordConfirm.click();
+            }
+        });
+
+        passwordConfirm.addEventListener('click', async () => {
+            const enteredPassword = passwordInput.value;
+
+            if (enteredPassword === ADMIN_PASSWORD) {
+                await resetLeaderboardData();
+                passwordPromptModal.classList.remove('show');
+                passwordInput.value = '';
+                passwordError.classList.remove('show');
+            } else {
+                passwordError.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        async function resetLeaderboardData() {
+            try {
+                console.log('Starting leaderboard reset...');
+
+                // Delete all logs using gte on created_at (covers all rows)
+                const { data, error } = await supabaseClient
+                    .from('activity_logs')
+                    .delete()
+                    .gte('created_at', '1970-01-01')
+                    .select();
+
+                if (error) {
+                    console.error('Error resetting data:', error);
+                    console.error('Full error details:', JSON.stringify(error, null, 2));
+                    alert('Error resetting data. Please try again.');
+                    return;
+                }
+
+                console.log('Reset successful, deleted rows:', data ? data.length : 0);
+
+                await updateLeaderboards();
+
+                alert('Leaderboard data reset successfully!');
+            } catch (error) {
+                console.error('Error resetting data:', error);
+                console.error('Full error details:', JSON.stringify(error, null, 2));
+                alert('Error resetting data. Please try again.');
+            }
+        }
     </script>
 </body>
 </html>
