@@ -103,6 +103,7 @@
             justify-content: center;
             flex: 1;
             padding: 40px 20px;
+            pointer-events: none;
         }
 
         .card {
@@ -117,6 +118,7 @@
                         0 0 80px rgba(30, 50, 80, 0.1),
                         inset 0 1px 0 rgba(255, 255, 255, 0.1);
             animation: fadeInUp 1s ease-out;
+            pointer-events: auto;
         }
 
         @keyframes fadeInUp {
@@ -227,7 +229,7 @@
             max-width: 1400px;
             height: 100%;
             max-height: 600px;
-            z-index: 1;
+            z-index: 3;
             pointer-events: none;
             display: flex;
             justify-content: space-between;
@@ -261,6 +263,9 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            background: transparent;
+            border: none;
+            outline: none;
         }
 
         .easter-egg:hover {
@@ -348,6 +353,7 @@
             font-weight: 600;
             color: #94a3b8;
             letter-spacing: 0.02em;
+            pointer-events: auto;
         }
 
         @media (max-width: 1200px) {
@@ -502,14 +508,14 @@
 
     <div class="side-elements">
         <div class="easter-column left">
-            <div class="easter-egg" data-message="One more rep 💪" data-animation="shake">🏋️</div>
-            <div class="easter-egg" data-message="Protein time 🔒" data-animation="shake">🥤</div>
-            <div class="easter-egg" data-message="Summer loading ☀️" data-animation="glow">☀️</div>
+            <button class="easter-egg" data-message="One more rep 💪" data-animation="shake" type="button" aria-label="One more rep">🏋️</button>
+            <button class="easter-egg" data-message="Protein time 🔒" data-animation="shake" type="button" aria-label="Protein time">🥤</button>
+            <button class="easter-egg" data-message="Summer loading ☀️" data-animation="glow" type="button" aria-label="Summer loading">☀️</button>
         </div>
         <div class="easter-column right">
-            <div class="easter-egg" data-message="Catch the wave 🌊" data-animation="sway">🏄</div>
-            <div class="easter-egg" data-message="Beach mode 🏖️" data-animation="sway">🌴</div>
-            <div class="easter-egg" data-message="Stay playful ⚡" data-animation="bounce">🏐</div>
+            <button class="easter-egg" data-message="Catch the wave 🌊" data-animation="sway" type="button" aria-label="Catch the wave">🏄</button>
+            <button class="easter-egg" data-message="Beach mode 🏖️" data-animation="sway" type="button" aria-label="Beach mode">🌴</button>
+            <button class="easter-egg" data-message="Stay playful ⚡" data-animation="bounce" type="button" aria-label="Stay playful">🏐</button>
         </div>
     </div>
 
