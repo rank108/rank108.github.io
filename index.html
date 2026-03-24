@@ -11,14 +11,15 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             overflow-x: hidden;
             background: #0a0a0f;
             color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
             position: relative;
         }
 
@@ -118,16 +119,40 @@
             }
         }
 
-        .container {
+        .hero-section {
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex: 1;
+            min-height: 100vh;
             padding: 40px 20px;
             pointer-events: none;
+        }
+
+        .scroll-section {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .scroll-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         .card {
@@ -554,16 +579,313 @@
             transform: translateY(-2px);
         }
 
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 50px;
+            line-height: 1.7;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mission-section {
+            text-align: center;
+        }
+
+        .mission-content {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 60px 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .mission-text {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .mission-highlight {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .challenge-section-card {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 60px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .challenge-section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+        }
+
+        .challenge-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .challenge-main-text {
+            font-size: 2rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: rgba(30, 40, 60, 0.3);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.125rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .quote-generator-card {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 60px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .quote-display {
+            font-size: 1.75rem;
+            color: #cbd5e1;
+            font-style: italic;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quote-button {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .quote-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .squad-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .squad-card {
+            background: rgba(30, 40, 60, 0.3);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .squad-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(100, 150, 200, 0.4);
+        }
+
+        .squad-emoji {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .squad-title {
+            font-size: 1.5rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .squad-description {
+            font-size: 1rem;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .secret-section-card {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(100, 150, 200, 0.3);
+            border-radius: 32px;
+            padding: 60px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
+                        0 0 100px rgba(60, 130, 246, 0.1);
+        }
+
+        .secret-unlock-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .secret-icon {
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 20px;
+            background: rgba(40, 60, 80, 0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(100, 150, 200, 0.2);
+        }
+
+        .secret-icon:hover {
+            transform: scale(1.1);
+            background: rgba(60, 100, 140, 0.4);
+        }
+
+        .secret-icon.activated {
+            background: rgba(60, 130, 246, 0.3);
+            border-color: rgba(100, 150, 200, 0.5);
+            transform: scale(1.2);
+        }
+
+        .secret-revealed {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(60, 130, 246, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+        }
+
+        .secret-revealed.show {
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .secret-revealed-text {
+            font-size: 1.25rem;
+            color: #60a5fa;
+            font-weight: 600;
+            line-height: 1.7;
+        }
+
+        .final-section {
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .final-content {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 80px 60px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .final-title {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .final-subtitle {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        .final-date {
+            font-size: 2.5rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-top: 30px;
+        }
+
         .footer {
             position: relative;
             z-index: 2;
             text-align: center;
-            padding: 30px 20px;
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #94a3b8;
+            padding: 40px 20px;
+            font-size: 1rem;
+            color: #64748b;
             letter-spacing: 0.02em;
-            pointer-events: auto;
         }
 
         .audio-control {
@@ -746,6 +1068,102 @@
                 font-size: 0.85rem;
             }
 
+            .scroll-section {
+                padding: 60px 20px;
+                min-height: auto;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .section-subtitle {
+                font-size: 1rem;
+                margin-bottom: 30px;
+            }
+
+            .mission-content,
+            .challenge-section-card,
+            .quote-generator-card,
+            .secret-section-card,
+            .final-content {
+                padding: 40px 30px;
+                border-radius: 24px;
+            }
+
+            .mission-text {
+                font-size: 1.125rem;
+            }
+
+            .challenge-icon {
+                font-size: 3rem;
+            }
+
+            .challenge-main-text {
+                font-size: 1.5rem;
+            }
+
+            .progress-stats {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .stat-label {
+                font-size: 1rem;
+            }
+
+            .quote-display {
+                font-size: 1.25rem;
+                min-height: 80px;
+            }
+
+            .quote-button {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+
+            .squad-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .squad-emoji {
+                font-size: 2.5rem;
+            }
+
+            .squad-title {
+                font-size: 1.25rem;
+            }
+
+            .secret-unlock-icons {
+                gap: 15px;
+            }
+
+            .secret-icon {
+                font-size: 2.5rem;
+                padding: 15px;
+            }
+
+            .secret-revealed-text {
+                font-size: 1rem;
+            }
+
+            .final-title {
+                font-size: 2.5rem;
+            }
+
+            .final-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .final-date {
+                font-size: 1.75rem;
+            }
+
             .footer {
                 font-size: 1rem;
                 padding-bottom: 100px;
@@ -834,25 +1252,10 @@
         </div>
     </div>
 
-    <div class="container">
+    <section class="hero-section">
         <div class="card">
             <h1 class="title">LOCKED IN TILL JUNE</h1>
             <p class="subtitle">Our shared countdown to better habits, harder training, smarter eating, and feeling stronger and more confident by summer 2026.</p>
-
-            <div class="progress-section">
-                <div class="progress-label">
-                    <span>Journey Progress</span>
-                    <span id="progressPercent">0%</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" id="progressBar"></div>
-                </div>
-            </div>
-
-            <div class="daily-challenge">
-                <div class="challenge-label">Today's Challenge</div>
-                <div class="challenge-text" id="challengeText">Loading...</div>
-            </div>
 
             <div class="countdown">
                 <div class="time-unit">
@@ -877,7 +1280,135 @@
                 "Discipline is choosing between what you want now and what you want most."
             </div>
         </div>
-    </div>
+    </section>
+
+    <section class="scroll-section mission-section">
+        <div class="section-container">
+            <div class="mission-content">
+                <h2 class="section-title">The Mission</h2>
+                <p class="mission-text">
+                    No excuses. No half-efforts. Just <span class="mission-highlight">pure commitment</span> to becoming the strongest version of yourself.
+                </p>
+                <p class="mission-text">
+                    This is about more than the gym. It's about discipline, consistency, and showing up every single day until <span class="mission-highlight">June 1st, 2026</span>.
+                </p>
+                <p class="mission-text">
+                    Summer bodies are built in winter. Let's make it count.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Today's Challenge</h2>
+            <div class="challenge-section-card">
+                <div class="challenge-icon">💪</div>
+                <div class="challenge-main-text" id="challengeText">Loading...</div>
+                <p class="section-subtitle" style="margin-bottom: 0; margin-top: 20px;">New challenge drops every day</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Journey Progress</h2>
+            <p class="section-subtitle">Track every step towards June 1st</p>
+
+            <div class="progress-section" style="margin-bottom: 40px;">
+                <div class="progress-label">
+                    <span>Journey Progress</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="daysRemaining">0</span>
+                    <span class="stat-label">Days Remaining</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="daysElapsed">0</span>
+                    <span class="stat-label">Days Locked In</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="weeksRemaining">0</span>
+                    <span class="stat-label">Weeks to Go</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Daily Motivation</h2>
+            <div class="quote-generator-card">
+                <div class="quote-display" id="quoteDisplay">"Discipline is choosing between what you want now and what you want most."</div>
+                <button class="quote-button" id="quoteButton">New Quote</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Squad Energy</h2>
+            <p class="section-subtitle">We're all in this together</p>
+
+            <div class="squad-grid">
+                <div class="squad-card">
+                    <span class="squad-emoji">🔥</span>
+                    <div class="squad-title">No Days Off</div>
+                    <p class="squad-description">The grind doesn't stop. Every rep counts, every meal matters.</p>
+                </div>
+                <div class="squad-card">
+                    <span class="squad-emoji">💯</span>
+                    <div class="squad-title">All or Nothing</div>
+                    <p class="squad-description">Half-reps don't count. We're here for maximum results.</p>
+                </div>
+                <div class="squad-card">
+                    <span class="squad-emoji">⚡</span>
+                    <div class="squad-title">Built Different</div>
+                    <p class="squad-description">While they sleep, we train. That's the difference.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Secret Zone</h2>
+            <div class="secret-section-card">
+                <p class="section-subtitle">Click the icons in the right order to unlock something special</p>
+
+                <div class="secret-unlock-icons">
+                    <div class="secret-icon" data-order="1">🏋️</div>
+                    <div class="secret-icon" data-order="2">🥤</div>
+                    <div class="secret-icon" data-order="3">☀️</div>
+                </div>
+
+                <div class="secret-revealed" id="secretRevealed">
+                    <p class="secret-revealed-text">
+                        You found it. The real secret? There are no shortcuts.
+                        Just consistency, discipline, and showing up when you don't feel like it.
+                        That's what builds champions. Keep going.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="final-section">
+        <div class="section-container">
+            <div class="final-content">
+                <div class="final-title">SUMMER LOADING</div>
+                <p class="final-subtitle">The best version of you is coming</p>
+                <div class="final-date">June 1, 2026</div>
+            </div>
+        </div>
+    </section>
 
     <footer class="footer">
         Final day: June 1, 2026
@@ -953,6 +1484,70 @@
 
         getDailyChallenge();
 
+        function updateStats() {
+            const now = new Date().getTime();
+            const totalDuration = targetDate - startDate;
+            const elapsed = now - startDate;
+
+            const daysRemaining = Math.floor((targetDate - now) / (1000 * 60 * 60 * 24));
+            const daysElapsed = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+            const weeksRemaining = Math.floor(daysRemaining / 7);
+
+            const daysRemainingEl = document.getElementById('daysRemaining');
+            const daysElapsedEl = document.getElementById('daysElapsed');
+            const weeksRemainingEl = document.getElementById('weeksRemaining');
+
+            if (daysRemainingEl) daysRemainingEl.textContent = daysRemaining;
+            if (daysElapsedEl) daysElapsedEl.textContent = daysElapsed;
+            if (weeksRemainingEl) weeksRemainingEl.textContent = weeksRemaining;
+        }
+
+        updateStats();
+        setInterval(updateStats, 60000);
+
+        const scrollSections = document.querySelectorAll('.scroll-section');
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        if (!stat.dataset.animated) {
+                            const target = parseInt(stat.textContent);
+                            animateNumber(stat, 0, target, 1500);
+                            stat.dataset.animated = 'true';
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        scrollSections.forEach(section => {
+            scrollObserver.observe(section);
+        });
+
+        function animateNumber(element, start, end, duration) {
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    element.textContent = end;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
         const quotes = [
             "Discipline is choosing between what you want now and what you want most.",
             "Your only limit is you. Break through it.",
@@ -970,6 +1565,8 @@
 
         let currentQuoteIndex = 0;
         const quoteElement = document.getElementById('quote');
+        const quoteDisplay = document.getElementById('quoteDisplay');
+        const quoteButton = document.getElementById('quoteButton');
 
         quoteElement.addEventListener('click', () => {
             currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
@@ -980,37 +1577,84 @@
             }, 200);
         });
 
+        if (quoteButton) {
+            quoteButton.addEventListener('click', () => {
+                currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+                quoteDisplay.style.opacity = '0.5';
+                setTimeout(() => {
+                    quoteDisplay.textContent = '"' + quotes[currentQuoteIndex] + '"';
+                    quoteDisplay.style.opacity = '1';
+                }, 200);
+            });
+        }
+
+        const secretSequence2 = [1, 2, 3];
+        let userSequence2 = [];
+        const secretRevealed = document.getElementById('secretRevealed');
+        const secretIcons = document.querySelectorAll('.secret-icon');
+
+        secretIcons.forEach(icon => {
+            icon.addEventListener('click', () => {
+                const order = parseInt(icon.dataset.order);
+                userSequence2.push(order);
+
+                icon.classList.add('activated');
+                setTimeout(() => {
+                    icon.classList.remove('activated');
+                }, 300);
+
+                if (userSequence2.length > secretSequence2.length) {
+                    userSequence2.shift();
+                }
+
+                if (userSequence2.length === secretSequence2.length &&
+                    userSequence2.every((val, i) => val === secretSequence2[i])) {
+                    secretRevealed.classList.add('show');
+                    userSequence2 = [];
+                }
+            });
+        });
+
         const secretSequence = ['🏋️', '🥤', '☀️'];
         let userSequence = [];
         const secretMessage = document.getElementById('secretMessage');
         const closeSecret = document.getElementById('closeSecret');
 
-        document.querySelectorAll('.easter-column.left .easter-egg').forEach((egg, index) => {
-            egg.addEventListener('click', () => {
-                const icon = egg.textContent.trim();
-                userSequence.push(icon);
+        const easterEggsLeft = document.querySelectorAll('.easter-column.left .easter-egg');
+        if (easterEggsLeft.length > 0) {
+            easterEggsLeft.forEach((egg, index) => {
+                egg.addEventListener('click', () => {
+                    const icon = egg.textContent.trim();
+                    userSequence.push(icon);
 
-                if (userSequence.length > secretSequence.length) {
-                    userSequence.shift();
-                }
+                    if (userSequence.length > secretSequence.length) {
+                        userSequence.shift();
+                    }
 
-                if (userSequence.length === secretSequence.length &&
-                    userSequence.every((val, i) => val === secretSequence[i])) {
-                    secretMessage.classList.add('show');
-                    userSequence = [];
+                    if (userSequence.length === secretSequence.length &&
+                        userSequence.every((val, i) => val === secretSequence[i])) {
+                        if (secretMessage) {
+                            secretMessage.classList.add('show');
+                        }
+                        userSequence = [];
+                    }
+                });
+            });
+        }
+
+        if (closeSecret) {
+            closeSecret.addEventListener('click', () => {
+                secretMessage.classList.remove('show');
+            });
+        }
+
+        if (secretMessage) {
+            secretMessage.addEventListener('click', (e) => {
+                if (e.target === secretMessage) {
+                    secretMessage.classList.remove('show');
                 }
             });
-        });
-
-        closeSecret.addEventListener('click', () => {
-            secretMessage.classList.remove('show');
-        });
-
-        secretMessage.addEventListener('click', (e) => {
-            if (e.target === secretMessage) {
-                secretMessage.classList.remove('show');
-            }
-        });
+        }
 
         const bgVideo = document.getElementById('bgVideo');
         const audioControl = document.getElementById('audioControl');
