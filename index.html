@@ -174,10 +174,60 @@
             line-height: 1.7;
             color: #94a3b8;
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+        }
+
+        .progress-section {
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(30, 40, 60, 0.4);
+            border-radius: 100px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 100px;
+            transition: width 1s ease-out;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .countdown {
@@ -219,6 +269,31 @@
             font-weight: 500;
         }
 
+        .daily-challenge {
+            background: rgba(40, 60, 80, 0.25);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .challenge-label {
+            font-size: 0.75rem;
+            color: #60a5fa;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .challenge-text {
+            font-size: 1rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
         .quote {
             text-align: center;
             font-size: 1rem;
@@ -226,8 +301,33 @@
             font-style: italic;
             line-height: 1.6;
             margin-top: 20px;
-            padding-top: 30px;
+            padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .quote:hover {
+            color: #94a3b8;
+            background: rgba(30, 40, 60, 0.2);
+        }
+
+        .quote::after {
+            content: '↻';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 1.2rem;
+            color: #60a5fa;
+        }
+
+        .quote:hover::after {
+            opacity: 0.5;
         }
 
         .cursor-glow {
@@ -368,6 +468,92 @@
             50% { transform: scale(1.15); }
         }
 
+        .squad-label {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            z-index: 10;
+            background: rgba(20, 25, 35, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 10px 20px;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .squad-icon {
+            font-size: 1rem;
+        }
+
+        .secret-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            z-index: 1000;
+            background: rgba(20, 25, 35, 0.95);
+            backdrop-filter: blur(30px);
+            border: 2px solid rgba(100, 150, 200, 0.4);
+            border-radius: 24px;
+            padding: 40px 50px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6),
+                        0 0 100px rgba(60, 130, 246, 0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .secret-message.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .secret-message-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .secret-message-text {
+            font-size: 1.125rem;
+            color: #cbd5e1;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .secret-message-close {
+            background: rgba(60, 130, 246, 0.2);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            color: #60a5fa;
+            padding: 10px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .secret-message-close:hover {
+            background: rgba(60, 130, 246, 0.3);
+            border-color: rgba(100, 150, 200, 0.5);
+            transform: translateY(-2px);
+        }
+
         .footer {
             position: relative;
             z-index: 2;
@@ -476,6 +662,40 @@
 
             .quote {
                 font-size: 0.9rem;
+                padding: 16px;
+            }
+
+            .quote::after {
+                right: 12px;
+                font-size: 1rem;
+            }
+
+            .daily-challenge {
+                padding: 16px 20px;
+                margin-bottom: 24px;
+            }
+
+            .challenge-text {
+                font-size: 0.95rem;
+            }
+
+            .squad-label {
+                top: 20px;
+                left: 20px;
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+
+            .secret-message {
+                padding: 30px 30px;
+            }
+
+            .secret-message-title {
+                font-size: 1.25rem;
+            }
+
+            .secret-message-text {
+                font-size: 1rem;
             }
 
             .shape:nth-child(1),
@@ -584,6 +804,17 @@
         <span id="audioText">Enable Sound</span>
     </button>
 
+    <div class="squad-label">
+        <span class="squad-icon">👥</span>
+        <span>Squad Goals</span>
+    </div>
+
+    <div class="secret-message" id="secretMessage">
+        <div class="secret-message-title">Secret Unlocked!</div>
+        <div class="secret-message-text">You've discovered the hidden path. Remember: consistency beats intensity. The squad that trains together, transforms together.</div>
+        <button class="secret-message-close" id="closeSecret">Got It</button>
+    </div>
+
     <div class="shapes">
         <div class="shape"></div>
         <div class="shape"></div>
@@ -608,6 +839,21 @@
             <h1 class="title">LOCKED IN TILL JUNE</h1>
             <p class="subtitle">Our shared countdown to better habits, harder training, smarter eating, and feeling stronger and more confident by summer 2026.</p>
 
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span>Journey Progress</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="daily-challenge">
+                <div class="challenge-label">Today's Challenge</div>
+                <div class="challenge-text" id="challengeText">Loading...</div>
+            </div>
+
             <div class="countdown">
                 <div class="time-unit">
                     <span class="time-value" id="days">000</span>
@@ -627,7 +873,7 @@
                 </div>
             </div>
 
-            <div class="quote">
+            <div class="quote" id="quote">
                 "Discipline is choosing between what you want now and what you want most."
             </div>
         </div>
@@ -665,6 +911,106 @@
 
         updateCountdown();
         setInterval(updateCountdown, 1000);
+
+        const startDate = new Date('March 24, 2026 00:00:00').getTime();
+        function updateProgress() {
+            const now = new Date().getTime();
+            const totalDuration = targetDate - startDate;
+            const elapsed = now - startDate;
+            const progressPercent = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
+
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('progressPercent').textContent = progressPercent.toFixed(1) + '%';
+        }
+
+        updateProgress();
+        setInterval(updateProgress, 60000);
+
+        const dailyChallenges = [
+            "Complete 10 extra push-ups today",
+            "Drink 8 glasses of water",
+            "Try a new healthy recipe",
+            "30-minute workout session",
+            "Meditate for 10 minutes",
+            "No junk food today",
+            "Run or walk 2 miles",
+            "Do 5 minutes of stretching",
+            "Meal prep for tomorrow",
+            "Get 8 hours of sleep tonight",
+            "Try a new exercise",
+            "Hit your protein goal",
+            "Take the stairs all day",
+            "No screens 1 hour before bed",
+            "Learn a new fitness tip"
+        ];
+
+        function getDailyChallenge() {
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+            const challengeIndex = dayOfYear % dailyChallenges.length;
+            document.getElementById('challengeText').textContent = dailyChallenges[challengeIndex];
+        }
+
+        getDailyChallenge();
+
+        const quotes = [
+            "Discipline is choosing between what you want now and what you want most.",
+            "Your only limit is you. Break through it.",
+            "The pain you feel today will be the strength you feel tomorrow.",
+            "Success isn't always about greatness. It's about consistency.",
+            "Don't stop when you're tired. Stop when you're done.",
+            "The body achieves what the mind believes.",
+            "Excuses don't burn calories.",
+            "You don't have to be great to start, but you have to start to be great.",
+            "Make yourself proud.",
+            "Sweat is fat crying.",
+            "The only bad workout is the one that didn't happen.",
+            "Stronger than yesterday, weaker than tomorrow."
+        ];
+
+        let currentQuoteIndex = 0;
+        const quoteElement = document.getElementById('quote');
+
+        quoteElement.addEventListener('click', () => {
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+            quoteElement.style.opacity = '0.5';
+            setTimeout(() => {
+                quoteElement.textContent = '"' + quotes[currentQuoteIndex] + '"';
+                quoteElement.style.opacity = '1';
+            }, 200);
+        });
+
+        const secretSequence = ['🏋️', '🥤', '☀️'];
+        let userSequence = [];
+        const secretMessage = document.getElementById('secretMessage');
+        const closeSecret = document.getElementById('closeSecret');
+
+        document.querySelectorAll('.easter-column.left .easter-egg').forEach((egg, index) => {
+            egg.addEventListener('click', () => {
+                const icon = egg.textContent.trim();
+                userSequence.push(icon);
+
+                if (userSequence.length > secretSequence.length) {
+                    userSequence.shift();
+                }
+
+                if (userSequence.length === secretSequence.length &&
+                    userSequence.every((val, i) => val === secretSequence[i])) {
+                    secretMessage.classList.add('show');
+                    userSequence = [];
+                }
+            });
+        });
+
+        closeSecret.addEventListener('click', () => {
+            secretMessage.classList.remove('show');
+        });
+
+        secretMessage.addEventListener('click', (e) => {
+            if (e.target === secretMessage) {
+                secretMessage.classList.remove('show');
+            }
+        });
 
         const bgVideo = document.getElementById('bgVideo');
         const audioControl = document.getElementById('audioControl');
