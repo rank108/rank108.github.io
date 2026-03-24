@@ -1059,6 +1059,72 @@
             font-size: 1rem;
         }
 
+        .checkbox-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .checkbox-label {
+            flex: 1;
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(40, 60, 90, 0.6);
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + span {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .checkbox-label:has(input[type="checkbox"]:checked) {
+            background: rgba(60, 130, 246, 0.2);
+            border-color: #60a5fa;
+        }
+
+        .checkbox-label span {
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+
+        .form-group input[type="number"] {
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(30, 40, 60, 0.7);
+        }
+
+        .form-group input[type="number"]::placeholder {
+            color: #64748b;
+        }
+
         .log-submit-btn {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             border: none;
@@ -1076,6 +1142,62 @@
         .log-submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .leaderboard-section {
+            background: rgba(10, 15, 25, 0.3);
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin: 40px 0 30px;
+        }
+
+        .tab-button {
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 50px;
+            padding: 14px 40px;
+            color: #cbd5e1;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background: rgba(40, 60, 90, 0.6);
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-color: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .leaderboard-content {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .tab-content {
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .tab-content.active {
+            opacity: 1;
+            visibility: visible;
+            position: relative;
         }
 
         .leaderboard-grid {
@@ -1328,7 +1450,7 @@
             }
 
             .log-button {
-                bottom: 90px;
+                bottom: 20px;
                 left: 20px;
                 padding: 10px 18px;
                 font-size: 0.85rem;
@@ -1337,6 +1459,15 @@
             .audio-control {
                 bottom: 20px;
                 right: 20px;
+            }
+
+            .tab-button {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+
+            .leaderboard-content {
+                min-height: 350px;
             }
 
             .squad-dropdown {
@@ -1513,31 +1644,22 @@
                 </div>
 
                 <div class="form-group" id="workoutTypeGroup" style="display: none;">
-                    <label>Which workout?</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="workoutType" value="Gym">
+                    <label>Which workout? (select all that apply)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="workoutType" value="Gym">
                             <span>Gym</span>
                         </label>
-                        <label class="radio-label">
-                            <input type="radio" name="workoutType" value="Padel">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="workoutType" value="Padel">
                             <span>Padel</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Steps today?</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="steps" value="10k+" required>
-                            <span>More than 10k</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="steps" value="<10k" required>
-                            <span>10k or less</span>
-                        </label>
-                    </div>
+                    <label for="stepsInput">How many steps today?</label>
+                    <input type="number" id="stepsInput" name="steps" min="0" placeholder="e.g., 8500" required>
                 </div>
 
                 <button type="submit" class="log-submit-btn">Submit</button>
@@ -1577,6 +1699,32 @@
 
             <div class="quote" id="quote">
                 "Discipline is choosing between what you want now and what you want most."
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section leaderboard-section">
+        <div class="section-container">
+            <h2 class="section-title">Squad Leaderboard</h2>
+            <p class="section-subtitle">Track your progress and compete with the squad</p>
+
+            <div class="leaderboard-tabs">
+                <button class="tab-button active" data-tab="workouts">Workouts</button>
+                <button class="tab-button" data-tab="steps">Steps</button>
+            </div>
+
+            <div class="leaderboard-content">
+                <div class="tab-content active" id="workoutsTab">
+                    <div class="leaderboard-list" id="workoutsLeaderboard">
+                        <div class="leaderboard-empty">Loading...</div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="stepsTab">
+                    <div class="leaderboard-list" id="stepsLeaderboard">
+                        <div class="leaderboard-empty">Loading...</div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1699,28 +1847,6 @@
         </div>
     </section>
 
-    <section class="scroll-section">
-        <div class="section-container">
-            <h2 class="section-title">Leaderboards</h2>
-            <p class="section-subtitle">Squad performance tracker</p>
-
-            <div class="leaderboard-grid">
-                <div class="leaderboard-card">
-                    <h3 class="leaderboard-title">Most Workouts</h3>
-                    <div class="leaderboard-list" id="workoutsLeaderboard">
-                        <div class="leaderboard-empty">No data yet. Start logging!</div>
-                    </div>
-                </div>
-
-                <div class="leaderboard-card">
-                    <h3 class="leaderboard-title">Most 10k+ Days</h3>
-                    <div class="leaderboard-list" id="stepsLeaderboard">
-                        <div class="leaderboard-empty">No data yet. Start logging!</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <section class="final-section">
         <div class="section-container">
@@ -2078,19 +2204,37 @@
             }
         });
 
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                if (targetTab === 'workouts') {
+                    document.getElementById('workoutsTab').classList.add('active');
+                } else if (targetTab === 'steps') {
+                    document.getElementById('stepsTab').classList.add('active');
+                }
+            });
+        });
+
         const workoutRadios = document.querySelectorAll('input[name="workout"]');
         workoutRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === 'yes') {
                     workoutTypeGroup.style.display = 'block';
-                    document.querySelectorAll('input[name="workoutType"]').forEach(r => {
-                        r.required = true;
-                    });
                 } else {
                     workoutTypeGroup.style.display = 'none';
-                    document.querySelectorAll('input[name="workoutType"]').forEach(r => {
-                        r.required = false;
-                        r.checked = false;
+                    document.querySelectorAll('input[name="workoutType"]').forEach(checkbox => {
+                        checkbox.checked = false;
                     });
                 }
             });
@@ -2122,13 +2266,23 @@
 
             const name = document.getElementById('logName').value;
             const workout = document.querySelector('input[name="workout"]:checked').value;
-            const workoutType = workout === 'yes' ? document.querySelector('input[name="workoutType"]:checked')?.value : null;
-            const steps = document.querySelector('input[name="steps"]:checked').value;
+
+            let workoutTypes = [];
+            if (workout === 'yes') {
+                const checkedBoxes = document.querySelectorAll('input[name="workoutType"]:checked');
+                if (checkedBoxes.length === 0) {
+                    alert('Please select at least one workout type');
+                    return;
+                }
+                workoutTypes = Array.from(checkedBoxes).map(cb => cb.value);
+            }
+
+            const steps = parseInt(document.getElementById('stepsInput').value);
 
             saveLog({
                 name,
                 workout: workout === 'yes',
-                workoutType,
+                workoutTypes,
                 steps
             });
 
@@ -2145,54 +2299,60 @@
         function updateLeaderboards() {
             const logs = loadLogs();
 
+            const squadMembers = [
+                'Peter',
+                'Amjad',
+                'Ali',
+                'Osman',
+                'Abod',
+                'Yazan',
+                'Rashed',
+                'Jonny'
+            ];
+
             const workoutsCount = {};
-            const stepsCount = {};
+            const stepsTotal = {};
+
+            squadMembers.forEach(member => {
+                workoutsCount[member] = 0;
+                stepsTotal[member] = 0;
+            });
 
             logs.forEach(log => {
-                if (log.workout) {
-                    workoutsCount[log.name] = (workoutsCount[log.name] || 0) + 1;
+                if (log.workout && log.workoutTypes) {
+                    workoutsCount[log.name] = (workoutsCount[log.name] || 0) + log.workoutTypes.length;
                 }
-                if (log.steps === '10k+') {
-                    stepsCount[log.name] = (stepsCount[log.name] || 0) + 1;
+                if (log.steps) {
+                    stepsTotal[log.name] = (stepsTotal[log.name] || 0) + log.steps;
                 }
             });
 
             const workoutsLeaderboard = Object.entries(workoutsCount)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
+                .sort((a, b) => b[1] - a[1]);
 
-            const stepsLeaderboard = Object.entries(stepsCount)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
+            const stepsLeaderboard = Object.entries(stepsTotal)
+                .sort((a, b) => b[1] - a[1]);
 
             const workoutsContainer = document.getElementById('workoutsLeaderboard');
             const stepsContainer = document.getElementById('stepsLeaderboard');
 
-            if (workoutsLeaderboard.length === 0) {
-                workoutsContainer.innerHTML = '<div class="leaderboard-empty">No data yet. Start logging!</div>';
-            } else {
-                workoutsContainer.innerHTML = workoutsLeaderboard
-                    .map((entry, index) => `
-                        <div class="leaderboard-item">
-                            <span class="leaderboard-rank">#${index + 1}</span>
-                            <span class="leaderboard-name">${entry[0]}</span>
-                            <span class="leaderboard-score">${entry[1]}</span>
-                        </div>
-                    `).join('');
-            }
+            workoutsContainer.innerHTML = workoutsLeaderboard
+                .map((entry, index) => `
+                    <div class="leaderboard-item">
+                        <span class="leaderboard-rank">#${index + 1}</span>
+                        <span class="leaderboard-name">${entry[0]}</span>
+                        <span class="leaderboard-score">${entry[1]}</span>
+                    </div>
+                `).join('');
 
-            if (stepsLeaderboard.length === 0) {
-                stepsContainer.innerHTML = '<div class="leaderboard-empty">No data yet. Start logging!</div>';
-            } else {
-                stepsContainer.innerHTML = stepsLeaderboard
-                    .map((entry, index) => `
-                        <div class="leaderboard-item">
-                            <span class="leaderboard-rank">#${index + 1}</span>
-                            <span class="leaderboard-name">${entry[0]}</span>
-                            <span class="leaderboard-score">${entry[1]}</span>
-                        </div>
-                    `).join('');
-            }
+            stepsContainer.innerHTML = stepsLeaderboard
+                .map((entry, index) => `
+                    <div class="leaderboard-item">
+                        <span class="leaderboard-rank">#${index + 1}</span>
+                        <span class="leaderboard-name">${entry[0]}</span>
+                        <span class="leaderboard-score">${entry[1].toLocaleString()}</span>
+                    </div>
+                `).join('');
         }
 
         updateLeaderboards();
