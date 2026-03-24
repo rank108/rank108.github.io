@@ -2241,6 +2241,49 @@
         });
 
         const STORAGE_KEY = 'lockedInTillJune_logs';
+        const MIGRATION_VERSION_KEY = 'lockedInTillJune_version';
+        const CURRENT_VERSION = 2;
+
+        function migrateData() {
+            const currentVersion = parseInt(localStorage.getItem(MIGRATION_VERSION_KEY) || '0');
+
+            if (currentVersion >= CURRENT_VERSION) {
+                return;
+            }
+
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (!data) {
+                localStorage.setItem(MIGRATION_VERSION_KEY, CURRENT_VERSION.toString());
+                return;
+            }
+
+            let logs = JSON.parse(data);
+
+            logs = logs.map(log => {
+                const migratedLog = { ...log };
+
+                if (typeof log.steps === 'string') {
+                    migratedLog.steps = 0;
+                } else if (typeof log.steps === 'number' && !isNaN(log.steps)) {
+                    migratedLog.steps = Math.max(0, Math.floor(log.steps));
+                } else {
+                    migratedLog.steps = 0;
+                }
+
+                if (log.workout && !log.workoutTypes) {
+                    if (log.workoutType) {
+                        migratedLog.workoutTypes = [log.workoutType];
+                    } else {
+                        migratedLog.workoutTypes = [];
+                    }
+                }
+
+                return migratedLog;
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+            localStorage.setItem(MIGRATION_VERSION_KEY, CURRENT_VERSION.toString());
+        }
 
         function loadLogs() {
             const data = localStorage.getItem(STORAGE_KEY);
@@ -2277,7 +2320,8 @@
                 workoutTypes = Array.from(checkedBoxes).map(cb => cb.value);
             }
 
-            const steps = parseInt(document.getElementById('stepsInput').value);
+            const stepsValue = parseInt(document.getElementById('stepsInput').value, 10);
+            const steps = isNaN(stepsValue) ? 0 : Math.max(0, stepsValue);
 
             saveLog({
                 name,
@@ -2319,11 +2363,15 @@
             });
 
             logs.forEach(log => {
-                if (log.workout && log.workoutTypes) {
+                if (log.workout && log.workoutTypes && Array.isArray(log.workoutTypes)) {
                     workoutsCount[log.name] = (workoutsCount[log.name] || 0) + log.workoutTypes.length;
                 }
-                if (log.steps) {
-                    stepsTotal[log.name] = (stepsTotal[log.name] || 0) + log.steps;
+
+                if (log.steps !== undefined && log.steps !== null) {
+                    const stepValue = typeof log.steps === 'number' ? log.steps : parseInt(log.steps, 10);
+                    if (!isNaN(stepValue) && stepValue > 0) {
+                        stepsTotal[log.name] = (stepsTotal[log.name] || 0) + stepValue;
+                    }
                 }
             });
 
@@ -2355,6 +2403,7 @@
                 `).join('');
         }
 
+        migrateData();
         updateLeaderboards();
     </script>
 </body>
