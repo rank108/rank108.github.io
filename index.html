@@ -369,214 +369,9 @@
             opacity: 0;
         }
 
-        .side-elements {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            max-width: 1400px;
-            height: 100%;
-            max-height: 600px;
-            z-index: 3;
-            pointer-events: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .easter-column {
-            display: flex;
-            flex-direction: column;
-            gap: 80px;
-            pointer-events: none;
-        }
-
-        .easter-column.left {
-            margin-left: 40px;
-        }
-
-        .easter-column.right {
-            margin-right: 40px;
-        }
-
-        .easter-egg {
-            cursor: pointer;
-            pointer-events: auto;
-            opacity: 0.3;
-            transition: all 0.3s ease;
-            font-size: 2.5rem;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            background: transparent;
-            border: none;
-            outline: none;
-        }
-
-        .easter-egg:hover {
-            opacity: 0.7;
-            transform: scale(1.15);
-        }
-
-        .easter-egg:active {
-            transform: scale(0.95);
-        }
-
-        .easter-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(20, 25, 35, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 12px 24px;
-            font-size: 0.95rem;
-            color: #ffffff;
-            white-space: nowrap;
-            z-index: 1000;
-            pointer-events: none;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            opacity: 0;
-            animation: fadeInOut 1.5s ease-in-out forwards;
-        }
-
-        @keyframes fadeInOut {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -60%);
-            }
-            10% {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
-            90% {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -40%);
-            }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(-15deg) scale(1.1); }
-            50% { transform: rotate(15deg) scale(1.1); }
-            75% { transform: rotate(-10deg) scale(1.1); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-25px) scale(1.1); }
-        }
-
-        @keyframes glow {
-            0%, 100% { filter: drop-shadow(0 4px 12px rgba(255, 200, 100, 0.3)); }
-            50% { filter: drop-shadow(0 0 40px rgba(255, 200, 100, 1)); }
-        }
-
-        @keyframes sway {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(-8deg) scale(1.05); }
-            75% { transform: rotate(8deg) scale(1.05); }
-        }
-
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.15); }
-        }
-
-        .squad-label {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            z-index: 10;
-            background: rgba(20, 25, 35, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 10px 20px;
-            color: #94a3b8;
-            font-size: 0.875rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            pointer-events: auto;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .squad-icon {
-            font-size: 1rem;
-        }
-
-        .secret-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            z-index: 1000;
-            background: rgba(20, 25, 35, 0.95);
-            backdrop-filter: blur(30px);
-            border: 2px solid rgba(100, 150, 200, 0.4);
-            border-radius: 24px;
-            padding: 40px 50px;
-            text-align: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6),
-                        0 0 100px rgba(60, 130, 246, 0.2);
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .secret-message.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-            pointer-events: auto;
-        }
-
-        .secret-message-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #60a5fa;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .secret-message-text {
-            font-size: 1.125rem;
-            color: #cbd5e1;
-            line-height: 1.7;
-            margin-bottom: 24px;
-        }
-
-        .secret-message-close {
-            background: rgba(60, 130, 246, 0.2);
-            border: 1px solid rgba(100, 150, 200, 0.3);
-            color: #60a5fa;
-            padding: 10px 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .secret-message-close:hover {
-            background: rgba(60, 130, 246, 0.3);
-            border-color: rgba(100, 150, 200, 0.5);
-            transform: translateY(-2px);
         }
 
         .section-title {
@@ -928,26 +723,434 @@
             color: #e2e8f0;
         }
 
+        .nav-pill {
+            position: fixed;
+            top: 30px;
+            background: rgba(30, 40, 60, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 50px;
+            padding: 12px 24px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-pill:hover {
+            background: rgba(40, 60, 90, 0.8);
+            border-color: rgba(100, 150, 200, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .squad-button {
+            left: 30px;
+        }
+
+        .excuse-button {
+            right: 30px;
+        }
+
+        .pill-icon {
+            font-size: 1.2rem;
+        }
+
+        .log-button {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(30, 40, 60, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 50px;
+            padding: 12px 24px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .log-button:hover {
+            background: rgba(40, 60, 90, 0.8);
+            border-color: rgba(100, 150, 200, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .log-icon {
+            font-size: 1.2rem;
+        }
+
+        .squad-dropdown {
+            position: fixed;
+            top: 80px;
+            left: 30px;
+            background: rgba(20, 25, 35, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 24px;
+            padding: 0;
+            width: 280px;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .squad-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid rgba(100, 150, 200, 0.2);
+        }
+
+        .dropdown-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 8px 0;
+        }
+
+        .dropdown-subtitle {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .squad-members {
+            padding: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .squad-member {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .squad-member:hover {
+            background: rgba(60, 80, 120, 0.3);
+        }
+
+        .member-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .member-role {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .excuse-modal,
+        .log-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .excuse-modal.show,
+        .log-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .excuse-content,
+        .log-modal-content {
+            position: relative;
+            background: rgba(20, 25, 35, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 32px;
+            padding: 50px 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .excuse-content {
+            text-align: center;
+        }
+
+        .log-modal-content {
+            width: 100%;
+            margin: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(100, 150, 200, 0.2);
+            color: #ffffff;
+        }
+
+        .excuse-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 30px;
+            letter-spacing: 0.05em;
+        }
+
+        .excuse-text {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .excuse-generate-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .excuse-generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .log-modal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .log-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        .form-group select {
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(30, 40, 60, 0.7);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .radio-label {
+            flex: 1;
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .radio-label:hover {
+            background: rgba(40, 60, 90, 0.6);
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .radio-label input[type="radio"] {
+            display: none;
+        }
+
+        .radio-label input[type="radio"]:checked + span {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .radio-label:has(input[type="radio"]:checked) {
+            background: rgba(60, 130, 246, 0.2);
+            border-color: #60a5fa;
+        }
+
+        .radio-label span {
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+
+        .log-submit-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            margin-top: 10px;
+        }
+
+        .log-submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .leaderboard-card {
+            background: rgba(20, 25, 35, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 24px;
+            padding: 30px;
+        }
+
+        .leaderboard-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: rgba(30, 40, 60, 0.3);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(40, 60, 90, 0.4);
+            transform: translateX(5px);
+        }
+
+        .leaderboard-rank {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #60a5fa;
+            min-width: 35px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            margin-left: 15px;
+        }
+
+        .leaderboard-score {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .leaderboard-empty {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.95rem;
+            padding: 30px;
+        }
+
         @media (max-width: 1200px) {
-            .side-elements {
-                max-width: 1100px;
-            }
-
-            .easter-column.left {
-                margin-left: 20px;
-            }
-
-            .easter-column.right {
-                margin-right: 20px;
-            }
-
-            .easter-column {
-                gap: 60px;
-            }
-
-            .easter-egg {
-                font-size: 2.2rem;
-            }
         }
 
         @media (max-width: 768px) {
@@ -1001,25 +1204,6 @@
                 font-size: 0.95rem;
             }
 
-            .squad-label {
-                top: 20px;
-                left: 20px;
-                padding: 8px 16px;
-                font-size: 0.8rem;
-            }
-
-            .secret-message {
-                padding: 30px 30px;
-            }
-
-            .secret-message-title {
-                font-size: 1.25rem;
-            }
-
-            .secret-message-text {
-                font-size: 1rem;
-            }
-
             .shape:nth-child(1),
             .shape:nth-child(2),
             .shape:nth-child(3) {
@@ -1029,43 +1213,8 @@
                 opacity: 0.1;
             }
 
-            .side-elements {
-                top: auto;
-                bottom: 20px;
-                transform: translate(-50%, 0);
-                max-height: none;
-                height: auto;
-                flex-direction: row;
-                justify-content: center;
-                gap: 20px;
-                max-width: 100%;
-            }
-
-            .easter-column {
-                flex-direction: row;
-                gap: 20px;
-                margin: 0 !important;
-            }
-
-            .easter-column.left .easter-egg:nth-child(3),
-            .easter-column.right .easter-egg:nth-child(3) {
-                display: none;
-            }
-
-            .easter-egg {
-                font-size: 1.8rem;
-                padding: 10px;
-            }
-
             .cursor-glow {
                 display: none;
-            }
-
-            .audio-control {
-                bottom: 20px;
-                right: 20px;
-                padding: 10px 20px;
-                font-size: 0.85rem;
             }
 
             .scroll-section {
@@ -1164,6 +1313,57 @@
                 font-size: 1.75rem;
             }
 
+            .nav-pill {
+                top: 20px;
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
+
+            .squad-button {
+                left: 20px;
+            }
+
+            .excuse-button {
+                right: 20px;
+            }
+
+            .log-button {
+                bottom: 90px;
+                left: 20px;
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
+
+            .audio-control {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .squad-dropdown {
+                top: 70px;
+                left: 20px;
+                width: calc(100% - 40px);
+                max-width: 320px;
+            }
+
+            .excuse-text {
+                font-size: 1.5rem;
+                min-height: 60px;
+            }
+
+            .log-modal-content {
+                padding: 40px 30px;
+            }
+
+            .log-modal-title {
+                font-size: 1.5rem;
+            }
+
+            .leaderboard-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
             .footer {
                 font-size: 1rem;
                 padding-bottom: 100px;
@@ -1192,15 +1392,6 @@
                 font-size: 2rem;
             }
 
-            .easter-column {
-                gap: 15px;
-            }
-
-            .easter-egg {
-                font-size: 1.5rem;
-                padding: 8px;
-            }
-
             .footer {
                 font-size: 0.9rem;
             }
@@ -1222,34 +1413,142 @@
         <span id="audioText">Enable Sound</span>
     </button>
 
-    <div class="squad-label">
-        <span class="squad-icon">👥</span>
-        <span>Squad Goals</span>
+    <button class="nav-pill squad-button" id="squadButton">
+        <span class="pill-icon">👥</span>
+        <span>Squad</span>
+    </button>
+
+    <button class="nav-pill excuse-button" id="excuseButton">
+        <span class="pill-icon">⚡</span>
+        <span>Excuse Destroyer</span>
+    </button>
+
+    <button class="log-button" id="logButton">
+        <span class="log-icon">📝</span>
+        <span>Log Today</span>
+    </button>
+
+    <div class="squad-dropdown" id="squadDropdown">
+        <div class="dropdown-header">
+            <h3>The Squad</h3>
+            <p class="dropdown-subtitle">Locked in till June</p>
+        </div>
+        <div class="squad-members">
+            <div class="squad-member">
+                <span class="member-name">Peter</span>
+                <span class="member-role">Initiator</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Amjad</span>
+                <span class="member-role">Big Guy</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Ali</span>
+                <span class="member-role">Athlete</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Osman</span>
+                <span class="member-role">Dirty Diet</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Abod</span>
+                <span class="member-role">Dirty Diet</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Yazan</span>
+                <span class="member-role">Entrepreneur</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Rashed</span>
+                <span class="member-role">OG</span>
+            </div>
+            <div class="squad-member">
+                <span class="member-name">Jonny</span>
+                <span class="member-role">Maynoon</span>
+            </div>
+        </div>
     </div>
 
-    <div class="secret-message" id="secretMessage">
-        <div class="secret-message-title">Secret Unlocked!</div>
-        <div class="secret-message-text">You've discovered the hidden path. Remember: consistency beats intensity. The squad that trains together, transforms together.</div>
-        <button class="secret-message-close" id="closeSecret">Got It</button>
+    <div class="excuse-modal" id="excuseModal">
+        <div class="excuse-content">
+            <button class="modal-close" id="excuseClose">&times;</button>
+            <h2 class="excuse-title">EXCUSE DESTROYER</h2>
+            <div class="excuse-text" id="excuseText">No excuses today.</div>
+            <button class="excuse-generate-btn" id="excuseGenerate">Destroy Another</button>
+        </div>
+    </div>
+
+    <div class="log-modal" id="logModal">
+        <div class="log-modal-content">
+            <button class="modal-close" id="logClose">&times;</button>
+            <h2 class="log-modal-title">Log Today</h2>
+            <form class="log-form" id="logForm">
+                <div class="form-group">
+                    <label for="logName">Who are you?</label>
+                    <select id="logName" required>
+                        <option value="">Select your name</option>
+                        <option value="Peter">Peter</option>
+                        <option value="Amjad">Amjad</option>
+                        <option value="Ali">Ali</option>
+                        <option value="Osman">Osman</option>
+                        <option value="Abod">Abod</option>
+                        <option value="Yazan">Yazan</option>
+                        <option value="Rashed">Rashed</option>
+                        <option value="Jonny">Jonny</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Did you workout today?</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="workout" value="yes" required>
+                            <span>Yes</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="workout" value="no" required>
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="workoutTypeGroup" style="display: none;">
+                    <label>Which workout?</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="workoutType" value="Gym">
+                            <span>Gym</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="workoutType" value="Padel">
+                            <span>Padel</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Steps today?</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="steps" value="10k+" required>
+                            <span>More than 10k</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="steps" value="<10k" required>
+                            <span>10k or less</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="log-submit-btn">Submit</button>
+            </form>
+        </div>
     </div>
 
     <div class="shapes">
         <div class="shape"></div>
         <div class="shape"></div>
         <div class="shape"></div>
-    </div>
-
-    <div class="side-elements">
-        <div class="easter-column left">
-            <button class="easter-egg" data-message="One more rep 💪" data-animation="shake" type="button" aria-label="One more rep">🏋️</button>
-            <button class="easter-egg" data-message="Protein time 🔒" data-animation="shake" type="button" aria-label="Protein time">🥤</button>
-            <button class="easter-egg" data-message="Summer loading ☀️" data-animation="glow" type="button" aria-label="Summer loading">☀️</button>
-        </div>
-        <div class="easter-column right">
-            <button class="easter-egg" data-message="Catch the wave 🌊" data-animation="sway" type="button" aria-label="Catch the wave">🏄</button>
-            <button class="easter-egg" data-message="Beach mode 🏖️" data-animation="sway" type="button" aria-label="Beach mode">🌴</button>
-            <button class="easter-egg" data-message="Stay playful ⚡" data-animation="bounce" type="button" aria-label="Stay playful">🏐</button>
-        </div>
     </div>
 
     <section class="hero-section">
@@ -1395,6 +1694,29 @@
                         Just consistency, discipline, and showing up when you don't feel like it.
                         That's what builds champions. Keep going.
                     </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="scroll-section">
+        <div class="section-container">
+            <h2 class="section-title">Leaderboards</h2>
+            <p class="section-subtitle">Squad performance tracker</p>
+
+            <div class="leaderboard-grid">
+                <div class="leaderboard-card">
+                    <h3 class="leaderboard-title">Most Workouts</h3>
+                    <div class="leaderboard-list" id="workoutsLeaderboard">
+                        <div class="leaderboard-empty">No data yet. Start logging!</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-card">
+                    <h3 class="leaderboard-title">Most 10k+ Days</h3>
+                    <div class="leaderboard-list" id="stepsLeaderboard">
+                        <div class="leaderboard-empty">No data yet. Start logging!</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1615,46 +1937,6 @@
             });
         });
 
-        const secretSequence = ['🏋️', '🥤', '☀️'];
-        let userSequence = [];
-        const secretMessage = document.getElementById('secretMessage');
-        const closeSecret = document.getElementById('closeSecret');
-
-        const easterEggsLeft = document.querySelectorAll('.easter-column.left .easter-egg');
-        if (easterEggsLeft.length > 0) {
-            easterEggsLeft.forEach((egg, index) => {
-                egg.addEventListener('click', () => {
-                    const icon = egg.textContent.trim();
-                    userSequence.push(icon);
-
-                    if (userSequence.length > secretSequence.length) {
-                        userSequence.shift();
-                    }
-
-                    if (userSequence.length === secretSequence.length &&
-                        userSequence.every((val, i) => val === secretSequence[i])) {
-                        if (secretMessage) {
-                            secretMessage.classList.add('show');
-                        }
-                        userSequence = [];
-                    }
-                });
-            });
-        }
-
-        if (closeSecret) {
-            closeSecret.addEventListener('click', () => {
-                secretMessage.classList.remove('show');
-            });
-        }
-
-        if (secretMessage) {
-            secretMessage.addEventListener('click', (e) => {
-                if (e.target === secretMessage) {
-                    secretMessage.classList.remove('show');
-                }
-            });
-        }
 
         const bgVideo = document.getElementById('bgVideo');
         const audioControl = document.getElementById('audioControl');
@@ -1711,43 +1993,209 @@
 
         animateCursor();
 
-        const easterEggs = document.querySelectorAll('.easter-egg');
-        easterEggs.forEach(egg => {
-            egg.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+        const squadButton = document.getElementById('squadButton');
+        const squadDropdown = document.getElementById('squadDropdown');
+        const excuseButton = document.getElementById('excuseButton');
+        const excuseModal = document.getElementById('excuseModal');
+        const excuseClose = document.getElementById('excuseClose');
+        const excuseText = document.getElementById('excuseText');
+        const excuseGenerate = document.getElementById('excuseGenerate');
+        const logButton = document.getElementById('logButton');
+        const logModal = document.getElementById('logModal');
+        const logClose = document.getElementById('logClose');
+        const logForm = document.getElementById('logForm');
+        const workoutTypeGroup = document.getElementById('workoutTypeGroup');
 
-                const message = this.getAttribute('data-message');
-                const animation = this.getAttribute('data-animation');
+        squadButton.addEventListener('click', () => {
+            squadDropdown.classList.toggle('show');
+        });
 
-                this.style.animation = `${animation} 0.5s ease`;
+        document.addEventListener('click', (e) => {
+            if (!squadButton.contains(e.target) && !squadDropdown.contains(e.target)) {
+                squadDropdown.classList.remove('show');
+            }
+        });
 
-                setTimeout(() => {
-                    this.style.animation = '';
-                }, 500);
+        const excuseLines = [
+            "No excuses today.",
+            "Start ugly.",
+            "Ten minutes is better than zero.",
+            "Beach is coming.",
+            "Do the workout and complain later.",
+            "Tired is not a schedule.",
+            "The mood will come after you start.",
+            "You're not tired. You're unmotivated.",
+            "Sweat now. Shine later.",
+            "The only bad workout is the one you didn't do.",
+            "Stop waiting. Start moving.",
+            "You don't need motivation. You need discipline."
+        ];
 
-                const existingMessage = this.querySelector('.easter-message');
-                if (existingMessage) {
-                    existingMessage.remove();
+        let currentExcuseIndex = 0;
+
+        function showRandomExcuse() {
+            currentExcuseIndex = (currentExcuseIndex + 1) % excuseLines.length;
+            excuseText.style.opacity = '0.5';
+            setTimeout(() => {
+                excuseText.textContent = excuseLines[currentExcuseIndex];
+                excuseText.style.opacity = '1';
+            }, 200);
+        }
+
+        excuseButton.addEventListener('click', () => {
+            excuseModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        });
+
+        excuseClose.addEventListener('click', () => {
+            excuseModal.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+
+        excuseGenerate.addEventListener('click', showRandomExcuse);
+
+        excuseModal.addEventListener('click', (e) => {
+            if (e.target === excuseModal) {
+                excuseModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+
+        logButton.addEventListener('click', () => {
+            logModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        });
+
+        logClose.addEventListener('click', () => {
+            logModal.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+
+        logModal.addEventListener('click', (e) => {
+            if (e.target === logModal) {
+                logModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+
+        const workoutRadios = document.querySelectorAll('input[name="workout"]');
+        workoutRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'yes') {
+                    workoutTypeGroup.style.display = 'block';
+                    document.querySelectorAll('input[name="workoutType"]').forEach(r => {
+                        r.required = true;
+                    });
+                } else {
+                    workoutTypeGroup.style.display = 'none';
+                    document.querySelectorAll('input[name="workoutType"]').forEach(r => {
+                        r.required = false;
+                        r.checked = false;
+                    });
                 }
+            });
+        });
 
-                const messageEl = document.createElement('div');
-                messageEl.className = 'easter-message';
-                messageEl.textContent = message;
-                this.appendChild(messageEl);
+        const STORAGE_KEY = 'lockedInTillJune_logs';
 
-                setTimeout(() => {
-                    if (messageEl.parentNode) {
-                        messageEl.remove();
-                    }
-                }, 1500);
+        function loadLogs() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveLogs(logs) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        }
+
+        function saveLog(logData) {
+            const logs = loadLogs();
+            logs.push({
+                ...logData,
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleDateString()
+            });
+            saveLogs(logs);
+        }
+
+        logForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('logName').value;
+            const workout = document.querySelector('input[name="workout"]:checked').value;
+            const workoutType = workout === 'yes' ? document.querySelector('input[name="workoutType"]:checked')?.value : null;
+            const steps = document.querySelector('input[name="steps"]:checked').value;
+
+            saveLog({
+                name,
+                workout: workout === 'yes',
+                workoutType,
+                steps
             });
 
-            egg.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                this.click();
-            }, { passive: false });
+            logForm.reset();
+            workoutTypeGroup.style.display = 'none';
+            logModal.classList.remove('show');
+            document.body.style.overflow = '';
+
+            updateLeaderboards();
+
+            alert('Logged successfully!');
         });
+
+        function updateLeaderboards() {
+            const logs = loadLogs();
+
+            const workoutsCount = {};
+            const stepsCount = {};
+
+            logs.forEach(log => {
+                if (log.workout) {
+                    workoutsCount[log.name] = (workoutsCount[log.name] || 0) + 1;
+                }
+                if (log.steps === '10k+') {
+                    stepsCount[log.name] = (stepsCount[log.name] || 0) + 1;
+                }
+            });
+
+            const workoutsLeaderboard = Object.entries(workoutsCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const stepsLeaderboard = Object.entries(stepsCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const workoutsContainer = document.getElementById('workoutsLeaderboard');
+            const stepsContainer = document.getElementById('stepsLeaderboard');
+
+            if (workoutsLeaderboard.length === 0) {
+                workoutsContainer.innerHTML = '<div class="leaderboard-empty">No data yet. Start logging!</div>';
+            } else {
+                workoutsContainer.innerHTML = workoutsLeaderboard
+                    .map((entry, index) => `
+                        <div class="leaderboard-item">
+                            <span class="leaderboard-rank">#${index + 1}</span>
+                            <span class="leaderboard-name">${entry[0]}</span>
+                            <span class="leaderboard-score">${entry[1]}</span>
+                        </div>
+                    `).join('');
+            }
+
+            if (stepsLeaderboard.length === 0) {
+                stepsContainer.innerHTML = '<div class="leaderboard-empty">No data yet. Start logging!</div>';
+            } else {
+                stepsContainer.innerHTML = stepsLeaderboard
+                    .map((entry, index) => `
+                        <div class="leaderboard-item">
+                            <span class="leaderboard-rank">#${index + 1}</span>
+                            <span class="leaderboard-name">${entry[0]}</span>
+                            <span class="leaderboard-score">${entry[1]}</span>
+                        </div>
+                    `).join('');
+            }
+        }
+
+        updateLeaderboards();
     </script>
 </body>
 </html>
