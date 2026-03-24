@@ -220,122 +220,123 @@
 
         .side-elements {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100%;
+            max-width: 1400px;
             height: 100%;
+            max-height: 600px;
             z-index: 1;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .easter-column {
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
             pointer-events: none;
         }
 
+        .easter-column.left {
+            margin-left: 40px;
+        }
+
+        .easter-column.right {
+            margin-right: 40px;
+        }
+
         .easter-egg {
-            position: absolute;
             cursor: pointer;
             pointer-events: auto;
             opacity: 0.3;
             transition: all 0.3s ease;
             font-size: 2.5rem;
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
         .easter-egg:hover {
             opacity: 0.7;
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
 
-        .easter-egg.left {
-            left: 5%;
-        }
-
-        .easter-egg.right {
-            right: 5%;
-        }
-
-        .easter-egg:nth-child(1) {
-            top: 20%;
-        }
-
-        .easter-egg:nth-child(2) {
-            top: 50%;
-        }
-
-        .easter-egg:nth-child(3) {
-            top: 75%;
+        .easter-egg:active {
+            transform: scale(0.95);
         }
 
         .easter-message {
-            position: fixed;
+            position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0);
+            transform: translate(-50%, -50%);
             background: rgba(20, 25, 35, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 30px 50px;
-            font-size: 1.5rem;
+            border-radius: 16px;
+            padding: 12px 24px;
+            font-size: 0.95rem;
             color: #ffffff;
+            white-space: nowrap;
             z-index: 1000;
             pointer-events: none;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: popIn 0.5s ease-out forwards;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            animation: fadeInOut 1.5s ease-in-out forwards;
         }
 
-        @keyframes popIn {
+        @keyframes fadeInOut {
             0% {
-                transform: translate(-50%, -50%) scale(0);
                 opacity: 0;
+                transform: translate(-50%, -60%);
             }
-            50% {
-                transform: translate(-50%, -50%) scale(1.1);
+            10% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+            90% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
             }
             100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes popOut {
-            0% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(0);
                 opacity: 0;
+                transform: translate(-50%, -40%);
             }
         }
 
         @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-15deg); }
-            75% { transform: rotate(15deg); }
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-15deg) scale(1.1); }
+            50% { transform: rotate(15deg) scale(1.1); }
+            75% { transform: rotate(-10deg) scale(1.1); }
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-25px) scale(1.1); }
         }
 
         @keyframes glow {
             0%, 100% { filter: drop-shadow(0 4px 12px rgba(255, 200, 100, 0.3)); }
-            50% { filter: drop-shadow(0 4px 30px rgba(255, 200, 100, 0.8)); }
+            50% { filter: drop-shadow(0 0 40px rgba(255, 200, 100, 1)); }
         }
 
         @keyframes sway {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(5deg); }
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-8deg) scale(1.05); }
+            75% { transform: rotate(8deg) scale(1.05); }
         }
 
-        @keyframes ripple {
-            0% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
         }
 
         .footer {
@@ -347,6 +348,28 @@
             font-weight: 600;
             color: #94a3b8;
             letter-spacing: 0.02em;
+        }
+
+        @media (max-width: 1200px) {
+            .side-elements {
+                max-width: 1100px;
+            }
+
+            .easter-column.left {
+                margin-left: 20px;
+            }
+
+            .easter-column.right {
+                margin-right: 20px;
+            }
+
+            .easter-column {
+                gap: 60px;
+            }
+
+            .easter-egg {
+                font-size: 2.2rem;
+            }
         }
 
         @media (max-width: 768px) {
@@ -392,8 +415,32 @@
                 height: 200px;
             }
 
+            .side-elements {
+                top: auto;
+                bottom: 20px;
+                transform: translate(-50%, 0);
+                max-height: none;
+                height: auto;
+                flex-direction: row;
+                justify-content: center;
+                gap: 20px;
+                max-width: 100%;
+            }
+
+            .easter-column {
+                flex-direction: row;
+                gap: 20px;
+                margin: 0 !important;
+            }
+
+            .easter-column.left .easter-egg:nth-child(3),
+            .easter-column.right .easter-egg:nth-child(3) {
+                display: none;
+            }
+
             .easter-egg {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                padding: 10px;
             }
 
             .cursor-glow {
@@ -402,6 +449,12 @@
 
             .footer {
                 font-size: 1rem;
+                padding-bottom: 100px;
+            }
+
+            .easter-message {
+                font-size: 0.85rem;
+                padding: 10px 20px;
             }
         }
 
@@ -422,16 +475,13 @@
                 font-size: 2rem;
             }
 
+            .easter-column {
+                gap: 15px;
+            }
+
             .easter-egg {
                 font-size: 1.5rem;
-            }
-
-            .easter-egg.left {
-                left: 2%;
-            }
-
-            .easter-egg.right {
-                right: 2%;
+                padding: 8px;
             }
 
             .footer {
@@ -451,12 +501,16 @@
     </div>
 
     <div class="side-elements">
-        <div class="easter-egg left" data-message="One more rep 💪" data-animation="shake">🏋️</div>
-        <div class="easter-egg left" data-message="Stay locked in 🔒" data-animation="shake">🥤</div>
-        <div class="easter-egg left" data-message="Summer body loading... ☀️" data-animation="glow">☀️</div>
-        <div class="easter-egg right" data-message="Catch the wave 🌊" data-animation="sway">🏄</div>
-        <div class="easter-egg right" data-message="Beach mode: ON 🏖️" data-animation="sway">🌴</div>
-        <div class="easter-egg right" data-message="Ready to play! ⚡" data-animation="bounce">🏐</div>
+        <div class="easter-column left">
+            <div class="easter-egg" data-message="One more rep 💪" data-animation="shake">🏋️</div>
+            <div class="easter-egg" data-message="Protein time 🔒" data-animation="shake">🥤</div>
+            <div class="easter-egg" data-message="Summer loading ☀️" data-animation="glow">☀️</div>
+        </div>
+        <div class="easter-column right">
+            <div class="easter-egg" data-message="Catch the wave 🌊" data-animation="sway">🏄</div>
+            <div class="easter-egg" data-message="Beach mode 🏖️" data-animation="sway">🌴</div>
+            <div class="easter-egg" data-message="Stay playful ⚡" data-animation="bounce">🏐</div>
+        </div>
     </div>
 
     <div class="container">
@@ -550,7 +604,10 @@
 
         const easterEggs = document.querySelectorAll('.easter-egg');
         easterEggs.forEach(egg => {
-            egg.addEventListener('click', function() {
+            egg.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 const message = this.getAttribute('data-message');
                 const animation = this.getAttribute('data-animation');
 
@@ -560,18 +617,27 @@
                     this.style.animation = '';
                 }, 500);
 
+                const existingMessage = this.querySelector('.easter-message');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+
                 const messageEl = document.createElement('div');
                 messageEl.className = 'easter-message';
                 messageEl.textContent = message;
-                document.body.appendChild(messageEl);
+                this.appendChild(messageEl);
 
                 setTimeout(() => {
-                    messageEl.style.animation = 'popOut 0.3s ease-out forwards';
-                    setTimeout(() => {
+                    if (messageEl.parentNode) {
                         messageEl.remove();
-                    }, 300);
+                    }
                 }, 1500);
             });
+
+            egg.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                this.click();
+            }, { passive: false });
         });
     </script>
 </body>
