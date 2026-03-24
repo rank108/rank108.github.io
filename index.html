@@ -2515,32 +2515,81 @@
             try {
                 const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
 
-                // Prepare the data for upsert
-                const activityLog = {
-                    name: logData.name,
-                    log_date: today,
-                    gym: logData.workoutTypes.includes('gym'),
-                    padel: logData.workoutTypes.includes('padel'),
-                    steps: logData.steps
-                };
-
-                // Use upsert to update if exists, insert if not (based on unique constraint: name + log_date)
-                const { data, error } = await supabaseClient
+                // First, check if a log already exists for this person today
+                const { data: existingLog, error: selectError } = await supabaseClient
                     .from('activity_logs')
-                    .upsert(activityLog, {
-                        onConflict: 'name,log_date',
-                        ignoreDuplicates: false
-                    })
-                    .select();
+                    .select('id, gym, padel, steps')
+                    .eq('name', logData.name)
+                    .eq('log_date', today)
+                    .maybeSingle();
 
-                if (error) {
-                    console.error('Error saving log:', error);
-                    throw error;
+                if (selectError) {
+                    console.error('Error checking existing log:', selectError);
+                    console.error('Full error details:', JSON.stringify(selectError, null, 2));
+                    throw selectError;
                 }
 
-                return data;
+                let result;
+
+                if (existingLog) {
+                    // MERGE logic: accumulate steps and merge workouts
+                    const mergedData = {
+                        gym: existingLog.gym || logData.workoutTypes.includes('gym'),
+                        padel: existingLog.padel || logData.workoutTypes.includes('padel'),
+                        steps: existingLog.steps + logData.steps
+                    };
+
+                    console.log('Merging with existing log:', {
+                        existing: existingLog,
+                        newSubmission: logData,
+                        merged: mergedData
+                    });
+
+                    // Update existing log with merged data
+                    const { data, error } = await supabaseClient
+                        .from('activity_logs')
+                        .update(mergedData)
+                        .eq('id', existingLog.id)
+                        .select();
+
+                    if (error) {
+                        console.error('Error updating log:', error);
+                        console.error('Full error details:', JSON.stringify(error, null, 2));
+                        throw error;
+                    }
+
+                    result = data;
+                } else {
+                    // Insert new log
+                    const newLog = {
+                        name: logData.name,
+                        log_date: today,
+                        gym: logData.workoutTypes.includes('gym'),
+                        padel: logData.workoutTypes.includes('padel'),
+                        steps: logData.steps
+                    };
+
+                    console.log('Inserting new log:', newLog);
+
+                    const { data, error } = await supabaseClient
+                        .from('activity_logs')
+                        .insert(newLog)
+                        .select();
+
+                    if (error) {
+                        console.error('Error inserting log:', error);
+                        console.error('Full error details:', JSON.stringify(error, null, 2));
+                        throw error;
+                    }
+
+                    result = data;
+                }
+
+                console.log('Log saved successfully:', result);
+                return result;
             } catch (error) {
-                console.error('Error saving log:', error);
+                console.error('Error in saveLog function:', error);
+                console.error('Full error details:', JSON.stringify(error, null, 2));
                 throw error;
             }
         }
