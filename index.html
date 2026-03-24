@@ -2826,33 +2826,31 @@
         });
 
         async function resetLeaderboardData() {
-            /**
-             * RESET FUNCTION - Supabase Implementation
-             *
-             * This function deletes all activity logs from the Supabase database.
-             * After deletion, all squad members will show 0 workouts and 0 steps.
-             * The squad member list remains intact.
-             */
-
             try {
-                // Delete all logs from Supabase activity_logs table
-                const { error } = await supabaseClient
+                console.log('Starting leaderboard reset...');
+
+                // Delete all logs using gte on created_at (covers all rows)
+                const { data, error } = await supabaseClient
                     .from('activity_logs')
                     .delete()
-                    .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all rows
+                    .gte('created_at', '1970-01-01')
+                    .select();
 
                 if (error) {
                     console.error('Error resetting data:', error);
+                    console.error('Full error details:', JSON.stringify(error, null, 2));
                     alert('Error resetting data. Please try again.');
                     return;
                 }
 
-                // Refresh leaderboards to show all members at 0
+                console.log('Reset successful, deleted rows:', data ? data.length : 0);
+
                 await updateLeaderboards();
 
-                alert('Leaderboard data reset successfully! All squad members remain with 0 workouts and 0 steps.');
+                alert('Leaderboard data reset successfully!');
             } catch (error) {
                 console.error('Error resetting data:', error);
+                console.error('Full error details:', JSON.stringify(error, null, 2));
                 alert('Error resetting data. Please try again.');
             }
         }
