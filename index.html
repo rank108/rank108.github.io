@@ -2513,12 +2513,11 @@
 
         async function saveLog(logData) {
             try {
-                const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+                const today = new Date().toISOString().split('T')[0];
 
-                // First, check if a log already exists for this person today
                 const { data: existingLog, error: selectError } = await supabaseClient
                     .from('activity_logs')
-                    .select('id, gym, padel, steps')
+                    .select('id, gym_count, padel_count, steps')
                     .eq('name', logData.name)
                     .eq('log_date', today)
                     .maybeSingle();
@@ -2529,23 +2528,24 @@
                     throw selectError;
                 }
 
+                const newGymCount = logData.workoutTypes.includes('gym') ? 1 : 0;
+                const newPadelCount = logData.workoutTypes.includes('padel') ? 1 : 0;
+
                 let result;
 
                 if (existingLog) {
-                    // MERGE logic: accumulate steps and merge workouts
                     const mergedData = {
-                        gym: existingLog.gym || logData.workoutTypes.includes('gym'),
-                        padel: existingLog.padel || logData.workoutTypes.includes('padel'),
-                        steps: existingLog.steps + logData.steps
+                        gym_count: (existingLog.gym_count || 0) + newGymCount,
+                        padel_count: (existingLog.padel_count || 0) + newPadelCount,
+                        steps: (existingLog.steps || 0) + logData.steps
                     };
 
                     console.log('Merging with existing log:', {
                         existing: existingLog,
-                        newSubmission: logData,
+                        newSubmission: { gym: newGymCount, padel: newPadelCount, steps: logData.steps },
                         merged: mergedData
                     });
 
-                    // Update existing log with merged data
                     const { data, error } = await supabaseClient
                         .from('activity_logs')
                         .update(mergedData)
@@ -2560,12 +2560,11 @@
 
                     result = data;
                 } else {
-                    // Insert new log
                     const newLog = {
                         name: logData.name,
                         log_date: today,
-                        gym: logData.workoutTypes.includes('gym'),
-                        padel: logData.workoutTypes.includes('padel'),
+                        gym_count: newGymCount,
+                        padel_count: newPadelCount,
                         steps: logData.steps
                     };
 
@@ -2710,19 +2709,16 @@
                 stepsTotal[member] = 0;
             });
 
-            // Calculate workouts and steps from Supabase data
             logs.forEach(log => {
-                // Count workouts: gym and padel are separate workouts
-                let workoutCount = 0;
-                if (log.gym) workoutCount++;
-                if (log.padel) workoutCount++;
+                if (!squadMembers.includes(log.name)) return;
 
-                if (workoutCount > 0 && squadMembers.includes(log.name)) {
-                    workoutsCount[log.name] = (workoutsCount[log.name] || 0) + workoutCount;
-                }
+                const gymCount = log.gym_count || (log.gym ? 1 : 0);
+                const padelCount = log.padel_count || (log.padel ? 1 : 0);
+                const totalWorkouts = gymCount + padelCount;
 
-                // Sum up steps
-                if (log.steps !== undefined && log.steps !== null && squadMembers.includes(log.name)) {
+                workoutsCount[log.name] = (workoutsCount[log.name] || 0) + totalWorkouts;
+
+                if (log.steps !== undefined && log.steps !== null) {
                     const stepValue = typeof log.steps === 'number' ? log.steps : parseInt(log.steps, 10);
                     if (!isNaN(stepValue) && stepValue >= 0) {
                         stepsTotal[log.name] = (stepsTotal[log.name] || 0) + stepValue;
