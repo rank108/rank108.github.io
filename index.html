@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Locked In Till June</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -1826,11 +1827,11 @@
                     <label>Which workout? (select all that apply)</label>
                     <div class="checkbox-group">
                         <label class="checkbox-label">
-                            <input type="checkbox" name="workoutType" value="Gym">
+                            <input type="checkbox" name="workoutType" value="gym">
                             <span>Gym</span>
                         </label>
                         <label class="checkbox-label">
-                            <input type="checkbox" name="workoutType" value="Padel">
+                            <input type="checkbox" name="workoutType" value="padel">
                             <span>Padel</span>
                         </label>
                     </div>
@@ -2437,6 +2438,14 @@
             });
         });
 
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://tzmikccgomfttvtjetxp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6bWlrY2Nnb21mdHR2dGpldHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTM1NTgsImV4cCI6MjA4OTkyOTU1OH0.599femhAv3PuSZQUbtDTK9dNyBVas4vQD_FjHTE6G0Y';
+
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         const STORAGE_KEY = 'lockedInTillJune_logs';
         const MIGRATION_VERSION_KEY = 'lockedInTillJune_version';
         const CURRENT_VERSION = 2;
@@ -2482,23 +2491,63 @@
             localStorage.setItem(MIGRATION_VERSION_KEY, CURRENT_VERSION.toString());
         }
 
-        function loadLogs() {
-            const data = localStorage.getItem(STORAGE_KEY);
-            return data ? JSON.parse(data) : [];
+        // Supabase Data Functions
+        async function loadLogs() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('activity_logs')
+                    .select('*')
+                    .order('log_date', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading logs:', error);
+                    return [];
+                }
+
+                return data || [];
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                return [];
+            }
         }
 
+        async function saveLog(logData) {
+            try {
+                const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+
+                // Prepare the data for upsert
+                const activityLog = {
+                    name: logData.name,
+                    log_date: today,
+                    gym: logData.workoutTypes.includes('gym'),
+                    padel: logData.workoutTypes.includes('padel'),
+                    steps: logData.steps
+                };
+
+                // Use upsert to update if exists, insert if not (based on unique constraint: name + log_date)
+                const { data, error } = await supabaseClient
+                    .from('activity_logs')
+                    .upsert(activityLog, {
+                        onConflict: 'name,log_date',
+                        ignoreDuplicates: false
+                    })
+                    .select();
+
+                if (error) {
+                    console.error('Error saving log:', error);
+                    throw error;
+                }
+
+                return data;
+            } catch (error) {
+                console.error('Error saving log:', error);
+                throw error;
+            }
+        }
+
+        // Legacy localStorage functions (keeping for migration purposes)
         function saveLogs(logs) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-        }
-
-        function saveLog(logData) {
-            const logs = loadLogs();
-            logs.push({
-                ...logData,
-                timestamp: new Date().toISOString(),
-                date: new Date().toLocaleDateString()
-            });
-            saveLogs(logs);
         }
 
         function getRankingColor(rank) {
@@ -2549,7 +2598,7 @@
             return '#e2e8f0';
         }
 
-        logForm.addEventListener('submit', (e) => {
+        logForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const name = document.getElementById('logName').value;
@@ -2568,25 +2617,30 @@
             const stepsValue = parseInt(document.getElementById('stepsInput').value, 10);
             const steps = isNaN(stepsValue) ? 0 : Math.max(0, stepsValue);
 
-            saveLog({
-                name,
-                workout: workout === 'yes',
-                workoutTypes,
-                steps
-            });
+            try {
+                await saveLog({
+                    name,
+                    workout: workout === 'yes',
+                    workoutTypes,
+                    steps
+                });
 
-            logForm.reset();
-            workoutTypeGroup.style.display = 'none';
-            logModal.classList.remove('show');
-            document.body.style.overflow = '';
+                logForm.reset();
+                workoutTypeGroup.style.display = 'none';
+                logModal.classList.remove('show');
+                document.body.style.overflow = '';
 
-            updateLeaderboards();
+                await updateLeaderboards();
 
-            alert('Logged successfully!');
+                alert('Logged successfully!');
+            } catch (error) {
+                alert('Error saving log. Please try again.');
+                console.error('Error:', error);
+            }
         });
 
-        function updateLeaderboards() {
-            const logs = loadLogs();
+        async function updateLeaderboards() {
+            const logs = await loadLogs();
 
             const squadMembers = [
                 'Peter',
@@ -2607,14 +2661,21 @@
                 stepsTotal[member] = 0;
             });
 
+            // Calculate workouts and steps from Supabase data
             logs.forEach(log => {
-                if (log.workout && log.workoutTypes && Array.isArray(log.workoutTypes)) {
-                    workoutsCount[log.name] = (workoutsCount[log.name] || 0) + log.workoutTypes.length;
+                // Count workouts: gym and padel are separate workouts
+                let workoutCount = 0;
+                if (log.gym) workoutCount++;
+                if (log.padel) workoutCount++;
+
+                if (workoutCount > 0 && squadMembers.includes(log.name)) {
+                    workoutsCount[log.name] = (workoutsCount[log.name] || 0) + workoutCount;
                 }
 
-                if (log.steps !== undefined && log.steps !== null) {
+                // Sum up steps
+                if (log.steps !== undefined && log.steps !== null && squadMembers.includes(log.name)) {
                     const stepValue = typeof log.steps === 'number' ? log.steps : parseInt(log.steps, 10);
-                    if (!isNaN(stepValue) && stepValue > 0) {
+                    if (!isNaN(stepValue) && stepValue >= 0) {
                         stepsTotal[log.name] = (stepsTotal[log.name] || 0) + stepValue;
                     }
                 }
@@ -2700,11 +2761,11 @@
             }
         });
 
-        passwordConfirm.addEventListener('click', () => {
+        passwordConfirm.addEventListener('click', async () => {
             const enteredPassword = passwordInput.value;
 
             if (enteredPassword === ADMIN_PASSWORD) {
-                resetLeaderboardData();
+                await resetLeaderboardData();
                 passwordPromptModal.classList.remove('show');
                 passwordInput.value = '';
                 passwordError.classList.remove('show');
@@ -2715,61 +2776,36 @@
             }
         });
 
-        function resetLeaderboardData() {
+        async function resetLeaderboardData() {
             /**
-             * RESET FUNCTION - Structured for easy localStorage -> Supabase migration
+             * RESET FUNCTION - Supabase Implementation
              *
-             * Current implementation: localStorage
-             * Future implementation: Supabase database
-             *
-             * When migrating to Supabase:
-             * 1. Replace the localStorage reset logic below with Supabase API calls
-             * 2. Keep the same function signature and structure
-             * 3. Add Supabase client calls to delete/reset data
-             * 4. Maintain the updateLeaderboards() call at the end
-             *
-             * Example future Supabase implementation:
-             *
-             * async function resetLeaderboardData() {
-             *     try {
-             *         // Delete all logs from Supabase
-             *         const { error } = await supabase
-             *             .from('logs')
-             *             .delete()
-             *             .neq('id', 0);  // Delete all rows
-             *
-             *         if (error) throw error;
-             *
-             *         // Refresh leaderboards
-             *         updateLeaderboards();
-             *         alert('Leaderboard data reset successfully!');
-             *     } catch (error) {
-             *         console.error('Error resetting data:', error);
-             *         alert('Error resetting data. Please try again.');
-             *     }
-             * }
+             * This function deletes all activity logs from the Supabase database.
+             * After deletion, all squad members will show 0 workouts and 0 steps.
+             * The squad member list remains intact.
              */
 
-            localStorage.removeItem(STORAGE_KEY);
+            try {
+                // Delete all logs from Supabase activity_logs table
+                const { error } = await supabaseClient
+                    .from('activity_logs')
+                    .delete()
+                    .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all rows
 
-            const squadMembers = [
-                'Peter',
-                'Amjad',
-                'Ali',
-                'Osman',
-                'Abod',
-                'Yazan',
-                'Rashed',
-                'Jonny',
-                'Wahab'
-            ];
+                if (error) {
+                    console.error('Error resetting data:', error);
+                    alert('Error resetting data. Please try again.');
+                    return;
+                }
 
-            const emptyLogs = [];
-            saveLogs(emptyLogs);
+                // Refresh leaderboards to show all members at 0
+                await updateLeaderboards();
 
-            updateLeaderboards();
-
-            alert('Leaderboard data reset successfully! All squad members remain with 0 workouts and 0 steps.');
+                alert('Leaderboard data reset successfully! All squad members remain with 0 workouts and 0 steps.');
+            } catch (error) {
+                console.error('Error resetting data:', error);
+                alert('Error resetting data. Please try again.');
+            }
         }
     </script>
 </body>
