@@ -1236,7 +1236,7 @@
             padding: 14px 18px;
             background: rgba(30, 40, 60, 0.3);
             border-radius: 12px;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .leaderboard-item:hover {
@@ -1244,25 +1244,53 @@
             transform: translateX(5px);
         }
 
+        .leaderboard-item.rank-1 {
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.2);
+        }
+
+        .leaderboard-item.rank-1:hover {
+            background: rgba(220, 38, 38, 0.2);
+            box-shadow: 0 6px 30px rgba(220, 38, 38, 0.3);
+        }
+
         .leaderboard-rank {
             font-size: 1.25rem;
             font-weight: 700;
-            color: #60a5fa;
             min-width: 35px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-shadow: 0 0 20px currentColor;
         }
 
         .leaderboard-name {
             flex: 1;
             font-size: 1rem;
             font-weight: 500;
-            color: #ffffff;
             margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-name {
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .leaderboard-score {
             font-size: 1.125rem;
             font-weight: 600;
-            color: #94a3b8;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-score {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-shadow: 0 0 20px currentColor;
         }
 
         .leaderboard-empty {
@@ -2304,6 +2332,54 @@
             saveLogs(logs);
         }
 
+        function getRankingColor(rank) {
+            const colors = [
+                { rank: 1, color: '#ef4444', opacity: 1.0 },
+                { rank: 2, color: '#f97316', opacity: 0.95 },
+                { rank: 3, color: '#fbbf24', opacity: 0.9 },
+                { rank: 4, color: '#a3e635', opacity: 0.85 },
+                { rank: 5, color: '#22c55e', opacity: 0.8 },
+                { rank: 6, color: '#14b8a6', opacity: 0.75 },
+                { rank: 7, color: '#06b6d4', opacity: 0.7 },
+                { rank: 8, color: '#3b82f6', opacity: 0.65 },
+                { rank: 9, color: '#6366f1', opacity: 0.6 },
+                { rank: 10, color: '#8b5cf6', opacity: 0.55 }
+            ];
+
+            if (rank <= colors.length) {
+                const colorData = colors[rank - 1];
+                return {
+                    color: colorData.color,
+                    opacity: colorData.opacity
+                };
+            }
+
+            const baseOpacity = 0.5;
+            const fadeRate = 0.03;
+            const calculatedOpacity = Math.max(0.2, baseOpacity - ((rank - colors.length) * fadeRate));
+
+            return {
+                color: '#64748b',
+                opacity: calculatedOpacity
+            };
+        }
+
+        function getRankingNameColor(rank) {
+            const colors = [
+                { rank: 1, color: '#fecaca' },
+                { rank: 2, color: '#fed7aa' },
+                { rank: 3, color: '#fde68a' },
+                { rank: 4, color: '#d9f99d' },
+                { rank: 5, color: '#bbf7d0' }
+            ];
+
+            if (rank <= colors.length) {
+                return colors[rank - 1].color;
+            }
+
+            return '#e2e8f0';
+        }
+
         logForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -2385,22 +2461,36 @@
             const stepsContainer = document.getElementById('stepsLeaderboard');
 
             workoutsContainer.innerHTML = workoutsLeaderboard
-                .map((entry, index) => `
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-rank">#${index + 1}</span>
-                        <span class="leaderboard-name">${entry[0]}</span>
-                        <span class="leaderboard-score">${entry[1]}</span>
-                    </div>
-                `).join('');
+                .map((entry, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'rank-1' : '';
+                    const rankColor = getRankingColor(rank);
+                    const nameColor = getRankingNameColor(rank);
+
+                    return `
+                        <div class="leaderboard-item ${rankClass}">
+                            <span class="leaderboard-rank" style="color: ${rankColor.color}; opacity: ${rankColor.opacity};">#${rank}</span>
+                            <span class="leaderboard-name" style="color: ${nameColor};">${entry[0]}</span>
+                            <span class="leaderboard-score" style="color: ${rankColor.color}; opacity: ${rankColor.opacity};">${entry[1]}</span>
+                        </div>
+                    `;
+                }).join('');
 
             stepsContainer.innerHTML = stepsLeaderboard
-                .map((entry, index) => `
-                    <div class="leaderboard-item">
-                        <span class="leaderboard-rank">#${index + 1}</span>
-                        <span class="leaderboard-name">${entry[0]}</span>
-                        <span class="leaderboard-score">${entry[1].toLocaleString()}</span>
-                    </div>
-                `).join('');
+                .map((entry, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'rank-1' : '';
+                    const rankColor = getRankingColor(rank);
+                    const nameColor = getRankingNameColor(rank);
+
+                    return `
+                        <div class="leaderboard-item ${rankClass}">
+                            <span class="leaderboard-rank" style="color: ${rankColor.color}; opacity: ${rankColor.opacity};">#${rank}</span>
+                            <span class="leaderboard-name" style="color: ${nameColor};">${entry[0]}</span>
+                            <span class="leaderboard-score" style="color: ${rankColor.color}; opacity: ${rankColor.opacity};">${entry[1].toLocaleString()}</span>
+                        </div>
+                    `;
+                }).join('');
         }
 
         migrateData();
