@@ -1144,6 +1144,157 @@
             box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
         }
 
+        .reset-container {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(100, 150, 200, 0.15);
+            text-align: center;
+        }
+
+        .reset-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.02em;
+        }
+
+        .reset-btn:hover {
+            color: #94a3b8;
+            background: rgba(100, 150, 200, 0.1);
+        }
+
+        .password-prompt-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            padding: 20px;
+        }
+
+        .password-prompt-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-prompt-content {
+            background: rgba(20, 25, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 35px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .password-prompt-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .password-prompt-description {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .password-input-group {
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            width: 100%;
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(30, 40, 60, 0.7);
+        }
+
+        .password-input::placeholder {
+            color: #64748b;
+        }
+
+        .password-error {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .password-error.show {
+            opacity: 1;
+        }
+
+        .password-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .password-cancel-btn,
+        .password-confirm-btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .password-cancel-btn {
+            background: rgba(30, 40, 60, 0.5);
+            color: #94a3b8;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+        }
+
+        .password-cancel-btn:hover {
+            background: rgba(40, 60, 90, 0.6);
+            color: #cbd5e1;
+        }
+
+        .password-confirm-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .password-confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
         .leaderboard-section {
             background: rgba(10, 15, 25, 0.3);
         }
@@ -1692,6 +1843,24 @@
 
                 <button type="submit" class="log-submit-btn">Submit</button>
             </form>
+            <div class="reset-container">
+                <button class="reset-btn" id="resetBtn">Reset leaderboard data</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="password-prompt-modal" id="passwordPromptModal">
+        <div class="password-prompt-content">
+            <h2 class="password-prompt-title">Admin Access Required</h2>
+            <p class="password-prompt-description">Enter the admin password to reset all leaderboard data. This action cannot be undone.</p>
+            <div class="password-input-group">
+                <input type="password" class="password-input" id="passwordInput" placeholder="Enter password">
+                <div class="password-error" id="passwordError">Incorrect password</div>
+            </div>
+            <div class="password-actions">
+                <button class="password-cancel-btn" id="passwordCancel">Cancel</button>
+                <button class="password-confirm-btn" id="passwordConfirm">Reset Data</button>
+            </div>
         </div>
     </div>
 
@@ -2495,6 +2664,113 @@
 
         migrateData();
         updateLeaderboards();
+
+        const ADMIN_PASSWORD = 'krewella';
+        const resetBtn = document.getElementById('resetBtn');
+        const passwordPromptModal = document.getElementById('passwordPromptModal');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordError = document.getElementById('passwordError');
+        const passwordCancel = document.getElementById('passwordCancel');
+        const passwordConfirm = document.getElementById('passwordConfirm');
+
+        resetBtn.addEventListener('click', () => {
+            passwordPromptModal.classList.add('show');
+            passwordInput.value = '';
+            passwordError.classList.remove('show');
+            passwordInput.focus();
+        });
+
+        passwordCancel.addEventListener('click', () => {
+            passwordPromptModal.classList.remove('show');
+            passwordInput.value = '';
+            passwordError.classList.remove('show');
+        });
+
+        passwordPromptModal.addEventListener('click', (e) => {
+            if (e.target === passwordPromptModal) {
+                passwordPromptModal.classList.remove('show');
+                passwordInput.value = '';
+                passwordError.classList.remove('show');
+            }
+        });
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                passwordConfirm.click();
+            }
+        });
+
+        passwordConfirm.addEventListener('click', () => {
+            const enteredPassword = passwordInput.value;
+
+            if (enteredPassword === ADMIN_PASSWORD) {
+                resetLeaderboardData();
+                passwordPromptModal.classList.remove('show');
+                passwordInput.value = '';
+                passwordError.classList.remove('show');
+            } else {
+                passwordError.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        function resetLeaderboardData() {
+            /**
+             * RESET FUNCTION - Structured for easy localStorage -> Supabase migration
+             *
+             * Current implementation: localStorage
+             * Future implementation: Supabase database
+             *
+             * When migrating to Supabase:
+             * 1. Replace the localStorage reset logic below with Supabase API calls
+             * 2. Keep the same function signature and structure
+             * 3. Add Supabase client calls to delete/reset data
+             * 4. Maintain the updateLeaderboards() call at the end
+             *
+             * Example future Supabase implementation:
+             *
+             * async function resetLeaderboardData() {
+             *     try {
+             *         // Delete all logs from Supabase
+             *         const { error } = await supabase
+             *             .from('logs')
+             *             .delete()
+             *             .neq('id', 0);  // Delete all rows
+             *
+             *         if (error) throw error;
+             *
+             *         // Refresh leaderboards
+             *         updateLeaderboards();
+             *         alert('Leaderboard data reset successfully!');
+             *     } catch (error) {
+             *         console.error('Error resetting data:', error);
+             *         alert('Error resetting data. Please try again.');
+             *     }
+             * }
+             */
+
+            localStorage.removeItem(STORAGE_KEY);
+
+            const squadMembers = [
+                'Peter',
+                'Amjad',
+                'Ali',
+                'Osman',
+                'Abod',
+                'Yazan',
+                'Rashed',
+                'Jonny',
+                'Wahab'
+            ];
+
+            const emptyLogs = [];
+            saveLogs(emptyLogs);
+
+            updateLeaderboards();
+
+            alert('Leaderboard data reset successfully! All squad members remain with 0 workouts and 0 steps.');
+        }
     </script>
 </body>
 </html>
