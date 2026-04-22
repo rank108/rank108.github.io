@@ -2617,7 +2617,7 @@
 
                 var { data, error } = await supabaseClient
                     .from('activity_logs')
-                    .update({ workouts: mergedWorkouts, steps: mergedSteps, updated_at: new Date().toISOString() })
+                    .update({ workouts: mergedWorkouts, steps: mergedSteps })
                     .eq('id', existingLog.id)
                     .select();
 
