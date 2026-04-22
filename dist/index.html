@@ -1060,48 +1060,137 @@
             font-size: 1rem;
         }
 
-        .checkbox-group {
-            display: flex;
-            gap: 12px;
+        .form-group input[type="date"] {
+            background: rgba(30, 40, 60, 0.5);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            width: 100%;
+            color-scheme: dark;
         }
 
-        .checkbox-label {
+        .form-group input[type="date"]:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(30, 40, 60, 0.7);
+        }
+
+        .workout-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .workout-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInRow 0.25s ease-out;
+        }
+
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .workout-row select {
             flex: 1;
             background: rgba(30, 40, 60, 0.5);
             border: 1px solid rgba(100, 150, 200, 0.3);
             border-radius: 12px;
             padding: 14px 16px;
-            text-align: center;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .workout-row select:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(30, 40, 60, 0.7);
+        }
+
+        .workout-remove-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .workout-remove-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.5);
+            transform: scale(1.05);
+        }
+
+        .add-workout-btn {
+            background: rgba(30, 40, 60, 0.4);
+            border: 1px dashed rgba(100, 150, 200, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #60a5fa;
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
+            margin-top: 4px;
         }
 
-        .checkbox-label:hover {
-            background: rgba(40, 60, 90, 0.6);
+        .add-workout-btn:hover {
+            background: rgba(40, 60, 90, 0.5);
             border-color: rgba(100, 150, 200, 0.5);
+            color: #93c5fd;
         }
 
-        .checkbox-label input[type="checkbox"] {
-            display: none;
+        .form-message {
+            text-align: center;
+            padding: 0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease;
         }
 
-        .checkbox-label input[type="checkbox"]:checked + span {
-            color: #60a5fa;
-            font-weight: 600;
+        .form-message.show {
+            opacity: 1;
+            max-height: 80px;
+            padding: 12px 16px;
         }
 
-        .checkbox-label:has(input[type="checkbox"]:checked) {
-            background: rgba(60, 130, 246, 0.2);
-            border-color: #60a5fa;
+        .form-message.success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
         }
 
-        .checkbox-label span {
-            color: #cbd5e1;
-            font-size: 1rem;
+        .form-message.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
         }
 
         .form-group input[type="number"] {
@@ -1793,7 +1882,13 @@
         <div class="log-modal-content">
             <button class="modal-close" id="logClose">&times;</button>
             <h2 class="log-modal-title">Log Today</h2>
+            <div class="form-message" id="formMessage"></div>
             <form class="log-form" id="logForm">
+                <div class="form-group">
+                    <label for="logDate">Date</label>
+                    <input type="date" id="logDate" required>
+                </div>
+
                 <div class="form-group">
                     <label for="logName">Who are you?</label>
                     <select id="logName" required>
@@ -1823,26 +1918,18 @@
                     </div>
                 </div>
 
-                <div class="form-group" id="workoutTypeGroup" style="display: none;">
-                    <label>Which workout? (select all that apply)</label>
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="workoutType" value="gym">
-                            <span>Gym</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="workoutType" value="padel">
-                            <span>Padel</span>
-                        </label>
-                    </div>
+                <div class="form-group" id="workoutSection" style="display: none;">
+                    <label>What did you do?</label>
+                    <div class="workout-entries" id="workoutEntries"></div>
+                    <button type="button" class="add-workout-btn" id="addWorkoutBtn">+ Add another workout</button>
                 </div>
 
                 <div class="form-group">
                     <label for="stepsInput">How many steps today?</label>
-                    <input type="number" id="stepsInput" name="steps" min="0" placeholder="e.g., 8500" required>
+                    <input type="number" id="stepsInput" name="steps" min="0" placeholder="e.g., 8500">
                 </div>
 
-                <button type="submit" class="log-submit-btn">Submit</button>
+                <button type="submit" class="log-submit-btn" id="logSubmitBtn">Submit</button>
             </form>
             <div class="reset-container">
                 <button class="reset-btn" id="resetBtn">Reset leaderboard data</button>
@@ -2328,7 +2415,55 @@
         const logModal = document.getElementById('logModal');
         const logClose = document.getElementById('logClose');
         const logForm = document.getElementById('logForm');
-        const workoutTypeGroup = document.getElementById('workoutTypeGroup');
+        const workoutSection = document.getElementById('workoutSection');
+        const workoutEntries = document.getElementById('workoutEntries');
+        const addWorkoutBtn = document.getElementById('addWorkoutBtn');
+        const logDateInput = document.getElementById('logDate');
+        const formMessage = document.getElementById('formMessage');
+        const WORKOUT_OPTIONS = ['Gym', 'Padel', 'Tennis', 'Swimming', 'Football', 'Volleyball'];
+
+        function createWorkoutRow(showRemove) {
+            var row = document.createElement('div');
+            row.className = 'workout-row';
+            var opts = WORKOUT_OPTIONS.map(function(w) { return '<option value="' + w + '">' + w + '</option>'; }).join('');
+            row.innerHTML = '<select class="workout-select"><option value="">Select workout</option>' + opts + '</select><button type="button" class="workout-remove-btn" aria-label="Remove">&times;</button>';
+            var removeBtn = row.querySelector('.workout-remove-btn');
+            if (!showRemove) removeBtn.style.visibility = 'hidden';
+            removeBtn.addEventListener('click', function() {
+                var rows = workoutEntries.querySelectorAll('.workout-row');
+                if (rows.length > 1) {
+                    row.remove();
+                    var remaining = workoutEntries.querySelectorAll('.workout-row');
+                    if (remaining.length === 1) {
+                        remaining[0].querySelector('.workout-remove-btn').style.visibility = 'hidden';
+                    }
+                }
+            });
+            return row;
+        }
+
+        function resetWorkoutEntries() {
+            workoutEntries.innerHTML = '';
+            workoutEntries.appendChild(createWorkoutRow(false));
+        }
+
+        addWorkoutBtn.addEventListener('click', function() {
+            workoutEntries.appendChild(createWorkoutRow(true));
+            var rows = workoutEntries.querySelectorAll('.workout-row');
+            if (rows.length > 1) {
+                rows[0].querySelector('.workout-remove-btn').style.visibility = 'visible';
+            }
+        });
+
+        resetWorkoutEntries();
+        logDateInput.value = new Date().toISOString().split('T')[0];
+
+        function showFormMessage(text, type) {
+            formMessage.textContent = text;
+            formMessage.className = 'form-message ' + type + ' show';
+            clearTimeout(showFormMessage._t);
+            showFormMessage._t = setTimeout(function() { formMessage.classList.remove('show'); }, 3500);
+        }
 
         squadButton.addEventListener('click', () => {
             squadDropdown.classList.toggle('show');
@@ -2386,6 +2521,7 @@
         });
 
         logButton.addEventListener('click', () => {
+            logDateInput.value = new Date().toISOString().split('T')[0];
             logModal.classList.add('show');
             document.body.style.overflow = 'hidden';
         });
@@ -2428,12 +2564,10 @@
         workoutRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === 'yes') {
-                    workoutTypeGroup.style.display = 'block';
+                    workoutSection.style.display = 'flex';
                 } else {
-                    workoutTypeGroup.style.display = 'none';
-                    document.querySelectorAll('input[name="workoutType"]').forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
+                    workoutSection.style.display = 'none';
+                    resetWorkoutEntries();
                 }
             });
         });
@@ -2445,51 +2579,6 @@
         // Initialize Supabase client
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        const STORAGE_KEY = 'lockedInTillJune_logs';
-        const MIGRATION_VERSION_KEY = 'lockedInTillJune_version';
-        const CURRENT_VERSION = 2;
-
-        function migrateData() {
-            const currentVersion = parseInt(localStorage.getItem(MIGRATION_VERSION_KEY) || '0');
-
-            if (currentVersion >= CURRENT_VERSION) {
-                return;
-            }
-
-            const data = localStorage.getItem(STORAGE_KEY);
-            if (!data) {
-                localStorage.setItem(MIGRATION_VERSION_KEY, CURRENT_VERSION.toString());
-                return;
-            }
-
-            let logs = JSON.parse(data);
-
-            logs = logs.map(log => {
-                const migratedLog = { ...log };
-
-                if (typeof log.steps === 'string') {
-                    migratedLog.steps = 0;
-                } else if (typeof log.steps === 'number' && !isNaN(log.steps)) {
-                    migratedLog.steps = Math.max(0, Math.floor(log.steps));
-                } else {
-                    migratedLog.steps = 0;
-                }
-
-                if (log.workout && !log.workoutTypes) {
-                    if (log.workoutType) {
-                        migratedLog.workoutTypes = [log.workoutType];
-                    } else {
-                        migratedLog.workoutTypes = [];
-                    }
-                }
-
-                return migratedLog;
-            });
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-            localStorage.setItem(MIGRATION_VERSION_KEY, CURRENT_VERSION.toString());
-        }
 
         // Supabase Data Functions
         async function loadLogs() {
@@ -2512,90 +2601,37 @@
         }
 
         async function saveLog(logData) {
-            try {
-                const today = new Date().toISOString().split('T')[0];
+            var { data: existingLog, error: selectError } = await supabaseClient
+                .from('activity_logs')
+                .select('id, workouts, steps')
+                .eq('name', logData.name)
+                .eq('log_date', logData.logDate)
+                .maybeSingle();
 
-                const { data: existingLog, error: selectError } = await supabaseClient
+            if (selectError) throw selectError;
+
+            if (existingLog) {
+                var existingWorkouts = Array.isArray(existingLog.workouts) ? existingLog.workouts : [];
+                var mergedWorkouts = existingWorkouts.concat(logData.workouts);
+                var mergedSteps = (existingLog.steps || 0) + logData.steps;
+
+                var { data, error } = await supabaseClient
                     .from('activity_logs')
-                    .select('id, gym_count, padel_count, steps')
-                    .eq('name', logData.name)
-                    .eq('log_date', today)
-                    .maybeSingle();
+                    .update({ workouts: mergedWorkouts, steps: mergedSteps })
+                    .eq('id', existingLog.id)
+                    .select();
 
-                if (selectError) {
-                    console.error('Error checking existing log:', selectError);
-                    console.error('Full error details:', JSON.stringify(selectError, null, 2));
-                    throw selectError;
-                }
-
-                const newGymCount = logData.workoutTypes.includes('gym') ? 1 : 0;
-                const newPadelCount = logData.workoutTypes.includes('padel') ? 1 : 0;
-
-                let result;
-
-                if (existingLog) {
-                    const mergedData = {
-                        gym_count: (existingLog.gym_count || 0) + newGymCount,
-                        padel_count: (existingLog.padel_count || 0) + newPadelCount,
-                        steps: (existingLog.steps || 0) + logData.steps
-                    };
-
-                    console.log('Merging with existing log:', {
-                        existing: existingLog,
-                        newSubmission: { gym: newGymCount, padel: newPadelCount, steps: logData.steps },
-                        merged: mergedData
-                    });
-
-                    const { data, error } = await supabaseClient
-                        .from('activity_logs')
-                        .update(mergedData)
-                        .eq('id', existingLog.id)
-                        .select();
-
-                    if (error) {
-                        console.error('Error updating log:', error);
-                        console.error('Full error details:', JSON.stringify(error, null, 2));
-                        throw error;
-                    }
-
-                    result = data;
-                } else {
-                    const newLog = {
-                        name: logData.name,
-                        log_date: today,
-                        gym_count: newGymCount,
-                        padel_count: newPadelCount,
-                        steps: logData.steps
-                    };
-
-                    console.log('Inserting new log:', newLog);
-
-                    const { data, error } = await supabaseClient
-                        .from('activity_logs')
-                        .insert(newLog)
-                        .select();
-
-                    if (error) {
-                        console.error('Error inserting log:', error);
-                        console.error('Full error details:', JSON.stringify(error, null, 2));
-                        throw error;
-                    }
-
-                    result = data;
-                }
-
-                console.log('Log saved successfully:', result);
-                return result;
-            } catch (error) {
-                console.error('Error in saveLog function:', error);
-                console.error('Full error details:', JSON.stringify(error, null, 2));
-                throw error;
+                if (error) throw error;
+                return data;
             }
-        }
 
-        // Legacy localStorage functions (keeping for migration purposes)
-        function saveLogs(logs) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+            var { data, error } = await supabaseClient
+                .from('activity_logs')
+                .insert({ name: logData.name, log_date: logData.logDate, workouts: logData.workouts, steps: logData.steps })
+                .select();
+
+            if (error) throw error;
+            return data;
         }
 
         function getRankingColor(rank) {
@@ -2649,41 +2685,53 @@
         logForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const name = document.getElementById('logName').value;
-            const workout = document.querySelector('input[name="workout"]:checked').value;
+            var name = document.getElementById('logName').value;
+            var logDate = document.getElementById('logDate').value;
+            var workoutChoice = document.querySelector('input[name="workout"]:checked');
 
-            let workoutTypes = [];
-            if (workout === 'yes') {
-                const checkedBoxes = document.querySelectorAll('input[name="workoutType"]:checked');
-                if (checkedBoxes.length === 0) {
-                    alert('Please select at least one workout type');
-                    return;
-                }
-                workoutTypes = Array.from(checkedBoxes).map(cb => cb.value);
+            if (!name) { showFormMessage('Please select your name.', 'error'); return; }
+            if (!logDate) { showFormMessage('Please select a date.', 'error'); return; }
+            if (!workoutChoice) { showFormMessage('Please select Yes or No.', 'error'); return; }
+
+            var workouts = [];
+            if (workoutChoice.value === 'yes') {
+                workoutEntries.querySelectorAll('.workout-select').forEach(function(sel) {
+                    if (sel.value) workouts.push(sel.value);
+                });
             }
 
-            const stepsValue = parseInt(document.getElementById('stepsInput').value, 10);
-            const steps = isNaN(stepsValue) ? 0 : Math.max(0, stepsValue);
+            var stepsRaw = document.getElementById('stepsInput').value;
+            var steps = stepsRaw === '' ? 0 : parseInt(stepsRaw, 10);
+            if (isNaN(steps) || steps < 0) {
+                showFormMessage('Steps must be a positive number.', 'error');
+                return;
+            }
+
+            if (workouts.length === 0 && steps === 0) {
+                showFormMessage('Add at least one workout or enter your steps.', 'error');
+                return;
+            }
+
+            var submitBtn = document.getElementById('logSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
 
             try {
-                await saveLog({
-                    name,
-                    workout: workout === 'yes',
-                    workoutTypes,
-                    steps
-                });
+                await saveLog({ name: name, logDate: logDate, workouts: workouts, steps: steps });
 
                 logForm.reset();
-                workoutTypeGroup.style.display = 'none';
-                logModal.classList.remove('show');
-                document.body.style.overflow = '';
+                logDateInput.value = new Date().toISOString().split('T')[0];
+                workoutSection.style.display = 'none';
+                resetWorkoutEntries();
 
+                showFormMessage('Logged successfully!', 'success');
                 await updateLeaderboards();
-
-                alert('Logged successfully!');
             } catch (error) {
-                alert('Error saving log. Please try again.');
                 console.error('Error:', error);
+                showFormMessage('Error saving log. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
             }
         });
 
@@ -2712,14 +2760,11 @@
             logs.forEach(log => {
                 if (!squadMembers.includes(log.name)) return;
 
-                const gymCount = log.gym_count || (log.gym ? 1 : 0);
-                const padelCount = log.padel_count || (log.padel ? 1 : 0);
-                const totalWorkouts = gymCount + padelCount;
-
-                workoutsCount[log.name] = (workoutsCount[log.name] || 0) + totalWorkouts;
+                var workoutsArr = Array.isArray(log.workouts) ? log.workouts : [];
+                workoutsCount[log.name] = (workoutsCount[log.name] || 0) + workoutsArr.length;
 
                 if (log.steps !== undefined && log.steps !== null) {
-                    const stepValue = typeof log.steps === 'number' ? log.steps : parseInt(log.steps, 10);
+                    var stepValue = typeof log.steps === 'number' ? log.steps : parseInt(log.steps, 10);
                     if (!isNaN(stepValue) && stepValue >= 0) {
                         stepsTotal[log.name] = (stepsTotal[log.name] || 0) + stepValue;
                     }
@@ -2768,7 +2813,6 @@
                 }).join('');
         }
 
-        migrateData();
         updateLeaderboards();
 
         const ADMIN_PASSWORD = 'krewella';
